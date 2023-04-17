@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Welcome to the Sports Betting App</h1>
+    <p>Explore live betting data for your favorite sports:</p>
+    <ul>
+        <li><a href="{{ url_for('baseball.index') }}">Baseball</a></li>
+        <li><a href="{{ url_for('football.index') }}">Football</a></li>
+        <li><a href="{{ url_for('basketball.index') }}">Basketball</a></li>
+        <li><a href="{{ url_for('hockey.index') }}">Hockey</a></li>
+        <li><a href="{{ url_for('soccer.index') }}">Soccer</a></li>
+    </ul>
+{% endblock %}
