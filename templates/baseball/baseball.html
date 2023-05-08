@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Upcoming MLB</h1>
+    <label class="switch">
+        <input type="checkbox" id="toggleOdds">
+        <span class="slider round"></span>
+      </label>
+      <span><p>American Odds</p></span>
+      <script>
+          const toggleOdds = document.getElementById("toggleOdds");
+      
+          toggleOdds.addEventListener("change", () => {
+              if (toggleOdds.checked) {
+                  // Code to change odds to American Odds
+              } else {
+                  // Code to change odds back to Probability
+              }
+          });
+      </script>
+      
+    
+    
+    
+    <div class="table-spacing">
+        {% for game in games %}
+            {% if game.away_prediction is not none or game.home_prediction is not none %}
+               
+                <div class="table-wrapper">
+                    <table class="table table-striped table-game-spacing table-limited-width">
+                        <thead>
+                            <tr>
+                                <th class="matchup">Game Time</th>
+                                <th class="matchup">Matchup</th>
+                                <th class="matchup">Best Book</th>
+                                <th class="matchup">Best Odds</th>
+                                <th class="matchup seafoam-bg">A.I.</th>
+                                <th class="matchup">EV%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <a href="{{ url_for('baseball.game', game_id=game.id) }}" class="btn btn-primary">Game Details test</a>
+                                <td rowspan="2" class="table-centered-data"> <time class="local-game-time" data-commence-time="{{ game.commence_time }}"></time> </td>
+                                <td class="table-data-spacing table-equal-width-columns"><h3>{{ game.away_team }}</h3></td>
+                                <td class="table-centered-data">{{ game.best_away_book }}</td>
+                                {% if game.best_away_odds > 0 %}
+                                    <td class="table-centered-data min-width-odds">{{ '+' ~ game.best_away_odds }}</td>
+                                {% else %}
+                                    <td class="table-centered-data min-width-odds">{{ game.best_away_odds }}</td>
+                                {% endif %}
+                                
+                                <td class="table-centered-data min-width-ai" data-american="{{game.away_prediction_american}}" data-probability="{{game.away_prediction}}%">{{game.away_prediction}}%</td>
+                                <td class="table-centered-data min-width-expected-value">{{ game.away_expected_value }}%</td>
+                            </tr>
+                            <tr class="table-away-team">
+                                <td class="table-data-spacing table-equal-width-columns"><h3>{{ game.home_team }}</h3></td>
+                                <td class="table-centered-data">{{ game.best_home_book }}</td>
+                                {% if game.best_home_odds > 0 %}
+                                    <td class="table-centered-data min-width-odds">{{ '+' ~ game.best_home_odds }}</td>
+                                {% else %}
+                                    <td class="table-centered-data min-width-odds">{{ game.best_home_odds }}</td>
+                                {% endif %}
+                                
+                                <td class="table-centered-data min-width-ai" data-american="{{game.home_prediction_american}}" data-probability="{{game.home_prediction}}%">{{game.home_prediction}}%</td>
+                                <td class="table-centered-data min-width-expected-value">{{ game.home_expected_value }}%</td>
+                            </tr>
+                           
+                        </tbody>
+                    </table>
+            {% endif %}
+               
+            </div>
+        {% endfor %}
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const gameTimeElements = document.querySelectorAll(".local-game-time");
+            gameTimeElements.forEach((gameTimeElement) => {
+                const utcGameTimeString = gameTimeElement.getAttribute("data-commence-time");
+                const utcGameTime = new Date(utcGameTimeString);
+
+                // Convert the UTC time to the user's local time
+                const localGameTime = new Date(utcGameTime.getTime() - utcGameTime.getTimezoneOffset() * 60000);
+
+                const options = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                };
+
+                const localGameTimeString = localGameTime.toLocaleString(undefined, options);
+                gameTimeElement.textContent = localGameTimeString;
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // ... Existing code for converting game time ...
+    
+            // Function to update the AI column based on the switch status
+            function updateAiColumn() {
+                const aiOddsElements = document.querySelectorAll(".min-width-ai");
+                const isChecked = document.getElementById("toggleOdds").checked;
+
+                aiOddsElements.forEach((aiOddsElement) => {
+                    if (isChecked) {
+                        let americanOdds = aiOddsElement.getAttribute("data-american");
+                        if (parseInt(americanOdds) > 0) {
+                            americanOdds = "+" + americanOdds;
+                        }
+                        aiOddsElement.textContent = americanOdds;
+                    } else {
+                        aiOddsElement.textContent = aiOddsElement.getAttribute("data-probability");
+                    }
+    });
+}
+    
+            // Add event listener for the switch
+            const toggleOdds = document.getElementById("toggleOdds");
+            toggleOdds.addEventListener("change", updateAiColumn);
+        });
+    </script>
+
+    <script>
+        // ... All existing scripts ...
+
+        // Auto-refresh the page every 5 minutes (300000 milliseconds)
+        setTimeout(() => {
+            location.reload();
+        }, 300000);
+    </script>
+        
+{% endblock %}

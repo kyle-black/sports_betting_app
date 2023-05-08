@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    
+
+    <h3>{{ game.away_team }} at {{ game.home_team }}</h3>
+    <p id="local-game-time">Game Time: {{ game.commence_time }}</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Sportsbook</th>
+                
+                <th>{{ game.away_team }} </th>
+                <th>Away AI</th>
+                <th>{{ game.home_team }} </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bookmaker in game.bookmakers %}
+                <tr>
+                    <td>{{ bookmaker.title }}</td>
+                    
+                    <td class="table-centered-data">{{ bookmaker.away_odds }}</td>
+                    <td class="table-centred-data"></td>
+                    <td class="table-centered-data">{{ bookmaker.home_odds }}</td>
+                    
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="{{ url_for('baseball.index') }}">Back to Upcoming Games</a></p>
+
+
+        
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const gameTimeElements = document.querySelectorAll(".local-game-time");
+            gameTimeElements.forEach((gameTimeElement) => {
+                const utcGameTimeString = gameTimeElement.getAttribute("data-commence-time");
+                const utcGameTime = new Date(utcGameTimeString);
+
+                // Convert the UTC time to the user's local time
+                const localGameTime = new Date(utcGameTime.getTime() - utcGameTime.getTimezoneOffset() * 60000);
+
+                const options = {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    timeZoneName: 'short'
+                };
+
+                const localGameTimeString = localGameTime.toLocaleString(undefined, options);
+                gameTimeElement.textContent = localGameTimeString;
+            });
+        });
+    </script>
+{% endblock %}

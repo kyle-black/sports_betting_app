@@ -1,29 +1,30 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Basketball Game: {{ game.id }}</h1>
+    
 
     <h3>{{ game.away_team }} at {{ game.home_team }}</h3>
-    <p>Game Time: {{ game.time.strftime('%H:%M') }}</p>
+    <p>Game Time: {{ game.commence_time }}</p>
 
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Team</th>
-                <th>Moneyline Odds</th>
+                <th>Sportsbook</th>
+                <th>{{ game.home_team }} </th>
+                <th>{{ game.away_team }} </th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>{{ game.away_team }}</td>
-                <td>{{ game.away_odds }}</td>
-            </tr>
-            <tr>
-                <td>{{ game.home_team }}</td>
-                <td>{{ game.home_odds }}</td>
-            </tr>
+            {% for bookmaker in game.bookmakers %}
+                <tr>
+                    <td>{{ bookmaker.title }}</td>
+                    <td>{{ bookmaker.away_odds }}</td>
+                    <td>{{ bookmaker.home_odds }}</td>
+                    
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 
-    <p><a href="{{ url_for('basketball.upcoming_games') }}">Back to Upcoming Games</a></p>
+    <p><a href="{{ url_for('basketball.index') }}">Back to Upcoming Games</a></p>
 {% endblock %}

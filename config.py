@@ -2,6 +2,7 @@ import os
 
 class Config(object):
   #  SECRET_KEY = os.environ.get('SECRET_KEY') or 'your-secret-key'
+    REDIS_URL = "redis://localhost:6379/0"
     DEBUG = False
     TESTING = False
 
