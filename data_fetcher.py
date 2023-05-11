@@ -5,7 +5,7 @@ import json
 def fetch_and_store_data(redis_client):
     api ="c47c3bdfd870b70a41d35c839dcab514"
 
-    url = f"https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/?regions=us&markets=h2h&oddsFormat=american&apiKey=c47c3bdfd870b70a41d35c839dcab514"
+    url = "https://api.the-odds-api.com/v4/sports/baseball_mlb/odds/?regions=us&markets=h2h&oddsFormat=american&apiKey=c47c3bdfd870b70a41d35c839dcab514"
     response = requests.get(url)
     
     if response.status_code != 200:

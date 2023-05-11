@@ -2,10 +2,14 @@ from flask import Blueprint, render_template, abort, current_app
 from datetime import datetime
 import json
 from statistics import median
+from datetime import datetime
 
 import jsonify
 
 baseball_bp = Blueprint('baseball', __name__, url_prefix='/baseball')
+
+
+
 
 def calculate_best_odds_and_books(games):
     for game in games:
@@ -92,12 +96,27 @@ def calculate_expected_value(ai_odds, best_odds):
 
 
 
+def calculate_expected_value_from_bet(bet_amount, expected_value_percentage):
+    expected_value = round(bet_amount * (expected_value_percentage / 100),2)
+    return expected_value
+
+def kelly_criterion(odds, win_probability, bankroll):
+    decimal_odds = convert_to_decimal_odds(odds)
+    edge = (decimal_odds * win_probability) - 1
+    bet_fraction = edge / (decimal_odds - 1)
+    bet_amnt = bet_fraction*bankroll
+    return bet_fraction, bet_amnt
+
+def convert_to_decimal_odds(american_odds):
+    if american_odds > 0:
+        return 1 + (american_odds / 100)
+    else:
+        return 1 + (-100 / american_odds)
 
 
 
-@baseball_bp.route('/simple_test')
-def simple_test():
-    return "This is a simple test route."
+
+
 
 @baseball_bp.route('/MLB')
 def index():
@@ -122,6 +141,9 @@ def index():
             game['home_prediction_american'] = None
             if game['sport_title'] == "MLB":
                 game['commence_time'] = datetime.strptime(game['commence_time'], date_format)
+
+                current_time = datetime.utcnow()
+                game['has_started'] = current_time > game['commence_time']
 
                 home_odds_list = []
                 away_odds_list = []
@@ -159,8 +181,36 @@ def index():
         mlb_games = calculate_best_odds_and_books(mlb_games)
         mlb_games = calculate_expected_value_percentage(mlb_games)
 
+        for game in mlb_games:
+            game['best_home_probability'] = american_odds_to_probability(game['best_home_odds'])
+            game['best_away_probability'] = american_odds_to_probability(game['best_away_odds'])
+
     else:
         mlb_games = []
+
+
+    bet_amount =150
+
+    for game in mlb_games:
+        if 'away_expected_value' in game:
+            game['away_expected_value_bet'] = calculate_expected_value_from_bet(bet_amount, game['away_expected_value'])
+        if 'home_expected_value' in game:
+            game['home_expected_value_bet'] = calculate_expected_value_from_bet(bet_amount, game['home_expected_value'])
+        
+        if game['home_prediction_american'] is not None and game['away_prediction_american'] is not None:
+            print(f"American odds (home): {game['best_home_odds']}")
+            print(f"American odds (away): {game['best_away_odds']}")
+            print(f"Win probability (home): {game['home_prediction'] / 100}")
+            print(f"Win probability (away): {game['away_prediction'] / 100}")
+            game['kelly_home_bet'],game['kelly_gross_home'] = kelly_criterion(game['best_home_odds'], game['home_prediction'] / 100, 100)
+            game['kelly_away_bet'], game['kelly_gross_away'] = kelly_criterion(game['best_away_odds'], game['away_prediction'] / 100, 100)
+        else:
+            game['kelly_home_bet'] = None
+            game['kelly_away_bet'] = None
+
+    
+
+
 
     return render_template('baseball/baseball.html', games=mlb_games)
 
@@ -170,6 +220,7 @@ def index():
 def game(game_id):
     redis_client = current_app.extensions["redis"]
     games_data = redis_client.get("mlb_data")
+    predictions_data = redis_client.get('mlb_predictions')
 
     if games_data:
         games = json.loads(games_data)
@@ -177,6 +228,17 @@ def game(game_id):
 
         if game is None:
             abort(404)
+
+        # Get the predictions
+        if predictions_data:
+            predictions = json.loads(predictions_data)
+            game_prediction = predictions.get(game_id)
+
+            if game_prediction:
+                game['away_prediction'] = round((game_prediction['probs'][0] * 100), 1)
+                game['home_prediction'] = round((game_prediction['probs'][1] * 100), 1)
+                game['away_prediction_american'] = probability_to_american_odds(game_prediction['probs'][0])
+                game['home_prediction_american'] = probability_to_american_odds(game_prediction['probs'][1])
 
         # Prepare the bookmakers data
         bookmakers = []
@@ -191,22 +253,41 @@ def game(game_id):
                     elif outcome['name'] == game['away_team']:
                         away_odds = outcome['price']
 
+                # Calculate expected value
+                home_expected_value = None
+                away_expected_value = None
+
+                if game_prediction:
+                    home_expected_value = calculate_expected_value(game['home_prediction_american'], home_odds)
+                    away_expected_value = calculate_expected_value(game['away_prediction_american'], away_odds)
+
+                home_probability = american_odds_to_probability(home_odds)
+                away_probability = american_odds_to_probability(away_odds)
+
+                kelly_home_bet, kelly_home_gross = kelly_criterion(home_odds, game['home_prediction'] / 100, 100)
+                kelly_away_bet, kelly_away_gross = kelly_criterion(away_odds, game['away_prediction'] / 100, 100)
+
                 bookmaker_data = {
                     'title': bookmaker['title'],
                     'home_odds': home_odds,
-                    'away_odds': away_odds
+                    'away_odds': away_odds,
+                    'home_expected_value': home_expected_value,
+                    'away_expected_value': away_expected_value,
+                    'home_probability': round(home_probability * 100, 1),
+                    'away_probability': round(away_probability * 100, 1),
+                    'kelly_home_bet': kelly_home_bet,
+                    'kelly_away_bet': kelly_away_bet,
+                    'kelly_home_gross': kelly_home_gross,
+                    'kelly_away_gross': kelly_away_gross
                 }
                 bookmakers.append(bookmaker_data)
-                print("Bookmaker data: ", bookmaker_data)  # Debugging print statement
 
         game['bookmakers'] = bookmakers
-        print("Game data: ", game)  # Debugging print statement
 
         return render_template('baseball/baseball_game.html', game=game)
 
     else:
         abort(404)
-
 @baseball_bp.route('/test')
 def test_data():
     preds = model2.predictions

@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
-
-    <h3>{{ game.away_team }} at {{ game.home_team }}</h3>
+    <div id="countdown-timer" class="countdown-timer"></div>
+    <h3 class="heading-spacing">{{ game.away_team }} at {{ game.home_team }}</h3>
     <p id="local-game-time">Game Time: {{ game.commence_time }}</p>
 
     <table class="table table-striped">
@@ -12,8 +11,18 @@
                 <th>Sportsbook</th>
                 
                 <th>{{ game.away_team }} </th>
-                <th>Away AI</th>
+                <th class="matchup seafoam-bg">Away AI</th>
+                <th>AWAY EV%</th>
+                <th>Kelly Multiplier</th>
+                <th>Kelly Gross</th>
+                <th> vs.</th>
                 <th>{{ game.home_team }} </th>
+                <th class="matchup seafoam-bg">Home AI</th>
+                <th>HOME EV%</th>
+                <th>Kelly Multiplier</th>
+                <th>Kelly Gross</th>
+                
+
             </tr>
         </thead>
         <tbody>
@@ -21,19 +30,26 @@
                 <tr>
                     <td>{{ bookmaker.title }}</td>
                     
-                    <td class="table-centered-data">{{ bookmaker.away_odds }}</td>
-                    <td class="table-centred-data"></td>
-                    <td class="table-centered-data">{{ bookmaker.home_odds }}</td>
-                    
-                    
+                    <td class="table-centered-data min-width-odds">{{ bookmaker.away_odds }}</td>
+                    <td class="table-centered-data min-width-odds">{{ game.away_prediction_american }}</td>
+                    <td class="table-centered-data min-width-expected-value">{{ bookmaker.away_expected_value }}%</td>
+                    <td class="table-centered-data min-width-expected-value">{{bookmaker.kelly_away_bet | round(2)}}</td>
+                    <td class="table-centered-data min-width-expected-value">${{bookmaker.kelly_away_gross | round(2)}}</td>
+
+                    <td class="table-centered-data min-width-odds grey"></td>
+                    <td class="table-centered-data min-width-odds">{{ bookmaker.home_odds }}</td>
+                    <td class="table-centered-data min-width-odds">{{ game.home_prediction_american }}</td>
+                    <td class="table-centered-data min-width-expected-value">{{ bookmaker.home_expected_value }}%</td>
+                    <td class="table-centered-data min-width-expected-value">{{bookmaker.kelly_home_bet | round(2)}}</td>
+                    <td class="table-centered-data min-width-expected-value">${{bookmaker.kelly_home_gross | round(2)}}</td>
+
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
-    <p><a href="{{ url_for('baseball.index') }}">Back to Upcoming Games</a></p>
-
-
+    
+    <a href="{{ url_for('baseball.index') }}" class="btn btn-3 icon-heart moresportsbook-btn"> All Games </a>
         
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -59,4 +75,59 @@
             });
         });
     </script>
+    <script>
+        function updateExpectedValueColors() {
+       const expectedValueElements = document.querySelectorAll(".min-width-expected-value");
+   
+       expectedValueElements.forEach((expectedValueElement) => {
+           const expectedValue = parseFloat(expectedValueElement.textContent);
+   
+           if (expectedValue >= 1 && expectedValue <= 10) {
+               expectedValueElement.style.color = '#90F5BB'; // light-green font
+           } else if (expectedValue > 10) {
+               expectedValueElement.style.color = '#28a745'; // dark-green font
+           } else if (expectedValue >= -10 && expectedValue < 0) {
+               expectedValueElement.style.color = '#EB584D'; // light-red font
+           } else if (expectedValue < -10) {
+               expectedValueElement.style.color = '#dc3545'; // dark-red font
+           }
+       });
+   }
+       document.addEventListener("DOMContentLoaded", function() {
+           // ... Existing code ...
+           updateExpectedValueColors();
+       });
+   
+       </script>
+        <script>
+            // ... All existing scripts ...
+    
+            // Auto-refresh the page every 5 minutes (300000 milliseconds)
+            setTimeout(() => {
+                location.reload();
+            }, 60000);
+        </script>
+        <script>
+            // Set the refresh interval in seconds
+            var refreshInterval = 60; // 1 minute
+            
+            // Get the countdown timer element
+            var countdownTimer = document.getElementById("countdown-timer");
+            
+            // Initialize the countdown
+            updateCountdown();
+            
+            // Update the countdown every second
+            setInterval(updateCountdown, 1000);
+            
+            // Function to update the countdown timer
+            function updateCountdown() {
+                countdownTimer.textContent = "Auto-Refresh: "+ refreshInterval + "s";
+                refreshInterval--;
+            
+                if (refreshInterval < 0) {
+                    location.reload();
+                }
+            }
+            </script>
 {% endblock %}

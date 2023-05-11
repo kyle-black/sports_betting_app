@@ -90,7 +90,7 @@ background-color: #242221fb;
 }
 
 .table-equal-width-columns {
-    width: 20%;
+    width: 100%;
 }
 
 .table-wrapper {
@@ -153,8 +153,8 @@ html, body {
 .switch {
   position: relative;
   display: inline-block;
-  width: 60px;
-  height: 34px;
+  width: 30px;
+  height: 17px;
 }
 
 .switch input {
@@ -178,8 +178,8 @@ html, body {
 .slider:before {
   position: absolute;
   content: "";
-  height: 26px;
-  width: 26px;
+  height: 10px;
+  width: 10px;
   left: 4px;
   bottom: 4px;
   background-color: white;
@@ -198,7 +198,7 @@ input:focus + .slider {
 input:checked + .slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
-  transform: translateX(26px);
+  transform: translateX(14px);
 }
 
 .slider.round {
@@ -210,7 +210,7 @@ input:checked + .slider:before {
 }
 .btn-primary, .btn-primary:link, .btn-primary:visited, .btn-primary:hover, .btn-primary:active {
     color: #fff;
-    background-color: #007bff;
+    background-color: #7dad81;
     border-color: #007bff;
     text-decoration: none;
 }
@@ -224,4 +224,256 @@ input:checked + .slider:before {
 
 .min-width-odds {
     min-width: 100px; /* Adjust this value based on your desired minimum width */
+}
+
+.min-width-expected-value {
+    min-width: 100px; /* Adjust this value based on your desired minimum width */
+}
+
+
+.table-centered-data.grey{
+    background-color: grey;
+}
+
+.btn {
+	border: none;
+	
+	font-size: inherit;
+	color: inherit;
+	background: none;
+	cursor: pointer;
+	padding: 25px 80px;
+	display: inline-block;
+	margin: 15px 30px;
+	
+	letter-spacing: 1px;
+	font-weight: 700;
+	outline: none;
+	position: relative;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+.btn:after {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+
+/* Pseudo elements for icons */
+.btn:before {
+	font-family: 'FontAwesome';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	position: relative;
+	-webkit-font-smoothing: antialiased;
+}
+
+
+/* Icon separator */
+.btn-sep {
+	padding: 25px 60px 25px 120px;
+}
+
+.btn-sep:before {
+	background: rgba(0,0,0,0.15);
+}
+
+/* Button 1 */
+.btn-1 {
+	background: #3498db;
+	color: #fff;
+}
+
+.btn-1:hover {
+	background: #2980b9;
+}
+
+.btn-1:active {
+	background: #2980b9;
+	top: 2px;
+}
+
+.btn-1:before {
+	position: absolute;
+	height: 100%;
+	left: 0;
+	top: 0;
+	line-height: 3;
+	font-size: 140%;
+	width: 60px;
+}
+
+/* Button 2 */
+.btn-2 {
+	background: #2ecc71;
+	color: #fff;
+}
+
+.btn-2:hover {
+	background: #27ae60;
+}
+
+.btn-2:active {
+	background: #27ae60;
+	top: 2px;
+}
+
+.btn-2:before {
+	position: absolute;
+	height: 100%;
+	left: 0;
+	top: 0;
+	line-height: 3;
+	font-size: 140%;
+	width: 60px;
+}
+
+/* Button 3 */
+.btn-3 {
+	background: #D95204;
+	color: #fff;
+}
+
+.btn-3:hover {
+	background: #389e90;
+}
+
+.btn-3:active {
+	background: #389e90;
+	top: 2px;
+}
+
+.btn-3:before {
+	position: absolute;
+	height: 100%;
+	left: 0;
+	top: 0;
+	line-height: 3;
+	font-size: 140%;
+	width: 60px;
+}
+
+/* Button 3 */
+.btn-4 {
+	background: #34495e;
+	color: #fff;
+}
+
+.btn-4:hover {
+	background: #2c3e50;
+}
+
+.btn-4:active {
+	background: #2c3e50;
+	top: 2px;
+}
+
+.btn-4:before {
+	position: absolute;
+	height: 100%;
+	left: 0;
+	top: 0;
+	line-height: 3;
+	font-size: 140%;
+	width: 60px;
+}
+
+/* Icons */
+
+.icon-cart:before {
+	content: "\f07a";
+}
+
+.icon-heart:before {
+	content: "\f55a";
+}
+
+.icon-info:before {
+	content: "\f05a";
+}
+
+.icon-send:before {
+	content: "\f1d8";
+}
+.team-name-no-wrap {
+    white-space: nowrap;
+}
+.game-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.moresportsbook-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+    margin-left: 16px;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.date-no-wrap{
+    white-space: nowrap;
+}
+
+.countdown-timer {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.switch-container {
+    position: absolute;
+    top: 200px;
+    right: 580px;
+  }
+.kelly-calculator {
+    display: block;
+    padding: 10px;
+    background-color: #14181d;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    
+    left: 10px; /* Position the calculator to the left */
+    top: 20px; /* Adjust this value if necessary */
+    width: 20px; /* Adjust the width to cover the input boxes */
+    height: auto; /* Add a height property */
+    overflow: auto; /* Add this line to handle overflow if content height is more than specified height */
+    margin-right: 20px;
+    flex: 0 0 calc(30% - 20px);
+    margin-right: 20px; /* Adjust the value as needed */
+}
+
+.main-container {
+    display: flex;
+    width:100%;
+    
+}
+.auto-refresh-container {
+    margin-left: 230px;
+    flex: 1 1 70%;
+}
+.content-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+.heading-spacing {
+    margin-bottom: 54px; /* Adjust this value to create more or less space */
 }
