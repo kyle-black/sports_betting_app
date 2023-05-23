@@ -19,8 +19,10 @@ def fetch_and_store_data(redis_client):
     print("Fetched data:", data)
 
     # Store the data in Redis with an expiration time (e.g., 5 minutes)
-    redis_client.delete('mlb_data')
-    redis_client.set("mlb_data", json.dumps(data))
+    try:
+        redis_client.delete('mlb_data')
+    except:
+        redis_client.set("mlb_data", json.dumps(data))
 
     url = "https://api.the-odds-api.com/v4/sports/basketball_nba/odds/?regions=us&markets=h2h&oddsFormat=american&apiKey=7a29fdc77828ef42a5c65e00dffc586f"
     response = requests.get(url)
@@ -38,6 +40,7 @@ def fetch_and_store_data(redis_client):
     #print("Fetched data:", data)
 
     # Store the data in Redis with an expiration time (e.g., 5 minutes)
+    
     redis_client.set("nba_data", json.dumps(data))
 
 
