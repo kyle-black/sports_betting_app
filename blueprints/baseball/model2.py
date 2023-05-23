@@ -10,10 +10,10 @@ import os
 
 REDIS_HOST = os.getenv('REDIS_URL')
 #REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
-REDIS_PORT = '31149'
+#REDIS_PORT = '31149'
   # Replace with your Redis server's port
 #redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
+redis_client = redis.Redis(host=REDIS_HOST)
 
 REDIS_KEY = "mlb_data"  # Replace with the actual key for the MLB data in Redis
 
