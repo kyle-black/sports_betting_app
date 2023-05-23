@@ -6,18 +6,20 @@ import redis
 #from flask import current_app
 from data_fetcher import fetch_and_store_data
 from apscheduler.schedulers.blocking import BlockingScheduler
+import os
 
-
-REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
-REDIS_PORT = 6379  # Replace with your Redis server's port
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
+REDIS_HOST = os.getenv('REDIS_URL')
+#REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
+#REDIS_PORT = 6379  # Replace with your Redis server's port
+#redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
+redis_client = redis.Redis(host=REDIS_HOST)
 
 REDIS_KEY = "mlb_data"  # Replace with the actual key for the MLB data in Redis
 
 # Get the data from Redis
-redis_data = redis_client.get(REDIS_KEY)
+#redis_data = redis_client.get(REDIS_KEY)
 
-data = json.loads(redis_data)
+#data = json.loads(redis_data)
 #print(data[0]['id'])
 #for i in data:
 #    print(i['id'])
@@ -237,6 +239,10 @@ def make_predictions(redis_df):
     
 def main():
     fetch_and_store_data(redis_client)
+    
+    redis_data = redis_client.get(REDIS_KEY)
+
+    data = json.loads(redis_data)
 
     
     
