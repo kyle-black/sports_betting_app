@@ -27,7 +27,6 @@ SQLAlchemy==1.3.23
 Flask-SQLAlchemy==2.5.1
 
 pandas
-numpypip 
 
 xgboost
 
