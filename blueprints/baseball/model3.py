@@ -24,9 +24,9 @@ def main():
     fetch_and_store_data(redis_client)
     redis_data = redis_client.get(REDIS_KEY)
     data = json.loads(redis_data)
-    print(data)
+    return data
 if __name__ in "__main__":
     #scheduler = BlockingScheduler()
     #scheduler.add_job(main, 'interval', minutes=5)
     #scheduler.start()
-    main()
+    print(main())
