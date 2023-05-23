@@ -21,7 +21,10 @@ REDIS_KEY = "mlb_data"  # Replace with the actual key for the MLB data in Redis
 
 def main():
     print(REDIS_HOST)
-
+    fetch_and_store_data(redis_client)
+    redis_data = redis_client.get(REDIS_KEY)
+    data = json.loads(redis_data)
+    print(data)
 if __name__ in "__main__":
     #scheduler = BlockingScheduler()
     #scheduler.add_job(main, 'interval', minutes=5)
