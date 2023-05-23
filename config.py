@@ -9,7 +9,7 @@ PRODUCTION_REDIS_PORT = os.getenv('PRODUCTION_REDIS_PORT')
 
 
 class Config(object):
-    REDIS_URL = "redis://localhost:6379/0"
+    RQ_REDIS_URL = REDIS_URL = os.getenv('REDIS_URL')
     DEBUG = False
     TESTING = False
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -25,4 +25,4 @@ class TestingConfig(Config):
     
 
 class ProductionConfig(Config):
-    REDIS_URL = f'''redis://{PRODUCTION_REDIS_USERNAME}:{PRODUCTION_REDIS_PASSWORD}@{PRODUCTION_REDIS_HOST}:{PRODUCTION_REDIS_PORT}/0'''
+    RQ_REDIS_URL = REDIS_URL = os.getenv('REDIS_URL')
