@@ -1,151 +1,118 @@
-{% extends 'base.html' %}
+{% extends 'base3.html' %}
 
 {% block content %}
-    <h1>Upcoming MLB</h1>
-    <div id="countdown-timer" class="countdown-timer"></div>
+    <h1 class="heading-spacing">Upcoming MLB</h1>
     
     
-    
-    
-    
-    
-    
-    <div class="switch-container">
-        <label class="switch">
-            <input type="checkbox" id="toggleOdds">
-            <span class="slider round"></span>
-        </label>
+    <div class="parameters">
+        <form class="bankroll-form" action="{{ url_for('baseball.mlb_index') }}" method="POST">
+            <div class="form-item">
+                <label for="bankroll">Bankroll:</label>
+                <input class="bankroll-input" type="number" id="bankroll" name="bankroll" min="0" step=".01" value="{{ bankroll }}" required>
+            </div>
+            <div class="form-item">
+                <h3 class="bankroll-output">Current Bankroll:  ${{ bankroll }}</h3>
+            </div>
+            <div class="form-item">
+                <label class="kelly-name" for="kelly_multiplier">Kelly Multiplier:</label>
+                <input class="kelly-multiplier" type="range" id="kelly_multiplier" name="kelly_multiplier" min="0.5" max="2.0" step="0.25" value="{{ kelly_multiplier }}" oninput="updateKellyValue(value)" onchange="storeKellyMultiplierValue(value)">
+            </div>
+            <div class="form-item">
+                <h3 class="bankroll-output">Current Multiplier:  {{ kelly_multiplier }}</h3>
+            </div>
+            <div class="form-item">
+                <input class="bankroll" type="submit" value="Submit">
+            </div>
+        </form>
     </div>
-    <div class="switch-container">
-        <label class="switch">
-            <input type="checkbox" id="toggleBestOdds">
-            <span class="slider round"></span>
-        </label>
-    </div>
-      
-      <script>
-          const toggleOdds = document.getElementById("toggleOdds");
-      
-          toggleOdds.addEventListener("change", () => {
-              if (toggleOdds.checked) {
-                  // Code to change odds to American Odds
-              } else {
-                  // Code to change odds back to Probability
-              }
-          });
-      </script>
-      <script>
-        function updateBestOddsColumn() {
-        const bestOddsElements = document.querySelectorAll(".best-odds");
-        const isChecked = document.getElementById("toggleBestOdds").checked;
-
-        bestOddsElements.forEach((bestOddsElement) => {
-            if (isChecked) {
-                bestOddsElement.textContent = bestOddsElement.getAttribute("data-american");
-            } else {
-                bestOddsElement.textContent = bestOddsElement.getAttribute("data-probability");
-            }
-        });
-    }
-
-    // Add event listener for the new switch
-    const toggleBestOdds = document.getElementById("toggleBestOdds");
-    toggleBestOdds.addEventListener("change", updateBestOddsColumn);
-
-      </script>
     
     <div class="main-container">
-      
-         <!--       <div id="kellyCalculator" class="kelly-calculator">
-                    <h3>Kelly Criterion Calculator</h3>
-                    <label for="bankroll">Bankroll:</label>
-                    <input type="number" id="bankroll" name="bankroll" min="0" step="0.01" required>
-                    <label for="betOdds">Bet Odds (American):</label>
-                    <input type="number" id="betOdds" name="betOdds" step="1" required>
-                    <label for="aiOdds">A.I. Odds (American):</label>
-                    <input type="number" id="aiOdds" name="aiOdds" step="1" required>
-                    <button id="calculateKelly" type="button">Calculate Kelly Bet</button>
-                    <div id="kellyResult"></div>
-                </div>  --> 
-            
-            
-            
-            
-                <div id="auto-refresh-container">  
-                    <div class="table-spacing">
-                        {% for game in games %}
-                            {% if game.away_prediction is not none or game.home_prediction is not none and game.has_started == False %}
-                            <div class="content-to-refresh">
-                                <div class="game-container">
-                                    <table class="table table-striped table-game-spacing table-limited-width">
-                                        <thead>
-                                            <tr>
-                                                <th class="matchup">Game Time</th>
-                                                <th class="matchup">Matchup</th>
-                                                <th class="matchup">Best Book</th>
-                                                <th class="matchup">Best Odds</th>
-                                                <th class="matchup seafoam-bg">A.I.</th>
-                                                <th class="matchup">EV%</th>
-                                                <th class="matchup">EV$</th>
-                                                <th class="matchup">Kelly Calc</th>
-                                                <th class="matchup">Kelly Gross</th>
+       
+        <div id="auto-refresh-container"> 
+            <div id="countdown-timer" class="countdown-timer"></div> 
+            <div class="table-spacing">
+                {% for game in games %}
+                    {% if game.away_prediction is not none or game.home_prediction is not none and game.has_started == False %}
+                        <div class="content-to-refresh">
+                            <div class="game-container">
+                                <table class="table table-striped table-game-spacing table-limited-width">
+                                    <thead>
+                                        <tr>
+                                            <th class="matchup">Game Time</th>
+                                            <th class="matchup">Matchup</th>
+                                            <th class="matchup">Best Book</th>
+                                            <th class="matchup">Best Odds</th>
+                                            <th class="matchup seafoam-bg">A.I.</th>
+                                            <th class="matchup seafoam-bg">A.I.%</th>
+                                            <th class="matchup">EV%</th>
+                                            <th class="matchup">EV$</th>
+                                            <th class="matchup">Kelly Calc</th>
+                                            <th class="matchup">Bet Size</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td rowspan="2" class="table-centered-data date-no-wrap">
+                                                <time class="local-game-time" data-commence-time="{{ game.commence_time }}"></time>
+                                            </td>
+                                            <td class="team-names team-name-no-wrap">{{ game.away_team }}</td>
+                                            <td class="table-centered-data min-width-odds">{{ game.best_away_book }}</td>
 
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td rowspan="2" class="table-centered-data date-no-wrap"> <time class="local-game-time" data-commence-time="{{ game.commence_time }}"></time> </td>
-                                                <td class="team-names team-name-no-wrap">{{ game.away_team }}</td>
-                                                <td class="table-centered-data min-width-odds">{{ game.best_away_book }}</td>
-                                                {% if game.best_away_odds > 0 %}
+                                            {% if game.best_away_odds > 0 %}
                                                 <td class="table-centered-data min-width-odds best-odds" data-american="{{ '+' ~ game.best_away_odds }}" data-probability="{{ game.best_away_probability }}%">{{ '+' ~ game.best_away_odds }}</td>
-                                                {% else %}
-                                                    <td class="table-centered-data min-width-odds best-odds" data-american="{{ game.best_away_odds }}" data-probability="{{ game.best_away_probability }}%">{{ game.best_away_odds }}</td>
-                                                {% endif %}
-                    
-                                                <td class="table-centered-data min-width-ai" data-american="{{game.away_prediction_american}}" data-probability="{{game.away_prediction}}%">{{game.away_prediction}}%</td>
-                                                <td class="table-centered-data min-width-expected-value">
-                                                    <span class="ev-color">{{ game.away_expected_value }}%</span>
-                                                </td>
-                    
-                                                <td class="table-centered-data min-width-odds">${{ game.away_expected_value_bet}}</td>
-                                                <td class="table-centered-data min-width-odds">{{ game.kelly_away_bet | round(2) }}</td>
-                                                <td class="table-centered-data min-width-odds">${{game.kelly_gross_away | round(2)}}</td>
-                                                
-                                            </tr>
-                                            <tr class="table-away-team">
-                                                <td class="team-names team-name-no-wrap">{{ game.home_team }}</td>
-                                                <td class="table-centered-data min-width-odds">{{ game.best_home_book }}</td>
-                                                {% if game.best_home_odds > 0 %}
+                                            {% else %}
+                                                <td class="table-centered-data min-width-odds best-odds" data-american="{{ game.best_away_odds }}" data-probability="{{ game.best_away_probability }}%">{{ game.best_away_odds }}</td>
+                                            {% endif %}
+
+                                            {% if game.away_prediction_american > 0 %}
+                                                <td class="table-centered-data min-width-odds best-odds">{{ '+' ~ game.away_prediction_american }}</td>
+                                            {% else %}
+                                                <td class="table-centered-data min-width-odds best-odds">{{ game.away_prediction_american }}</td>
+                                            {% endif %}
+
+                                            <td class="table-centered-data min-width-ai" data-american="{{ game.away_prediction_american }}" data-probability="{{ game.away_prediction }}%">{{ game.away_prediction }}%</td>
+                                            <td class="table-centered-data min-width-expected-value">
+                                                <span class="ev-color">{{ game.away_expected_value }}%</span>
+                                            </td>
+                                            <td class="table-centered-data min-width-odds">${{ game.away_expected_value_bet }}</td>
+                                            <td class="table-centered-data min-width-odds">{{ game.kelly_away_bet | round(2) }}</td>
+                                            <td class="table-centered-data min-width-odds">${{ game.kelly_gross_away | round(2) }}</td>
+                                        </tr>
+                                        <tr class="table-away-team">
+                                            <td class="team-names team-name-no-wrap">{{ game.home_team }}</td>
+                                            <td class="table-centered-data min-width-odds">{{ game.best_home_book }}</td>
+
+                                            {% if game.best_home_odds > 0 %}
                                                 <td class="table-centered-data min-width-odds best-odds" data-american="{{ '+' ~ game.best_home_odds }}" data-probability="{{ game.best_home_probability }}%">{{ '+' ~ game.best_home_odds }}</td>
-                                                {% else %}
+                                            {% else %}
                                                 <td class="table-centered-data min-width-odds best-odds" data-american="{{ game.best_home_odds }}" data-probability="{{ game.best_home_probability }}%">{{ game.best_home_odds }}</td>
-                                                {% endif %}
-                    
-                                                <td class="table-centered-data min-width-ai" data-american="{{game.home_prediction_american}}" data-probability="{{game.home_prediction}}%">{{game.home_prediction}}%</td>
-                                                <td class="table-centered-data min-width-expected-value">
-                                                    <span class="ev-color">{{ game.home_expected_value }}%</span>
-                                                </td>
-                                                <td class="table-centered-data min-width-odds">${{ game.home_expected_value_bet}}</td>
-                                                <td class="table-centered-data min-width-odds">{{ game.kelly_home_bet | round(2) }}</td>
-                                                <td class="table-centered-data min-width-odds">$ {{game.kelly_gross_home | round(2)}}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <a href="{{ url_for('baseball.game', game_id=game.id) }}" class="btn btn-3 icon-heart moresportsbook-btn">More Sportsbooks > </a>
-                                </div>
+                                            {% endif %}
+
+                                            {% if game.home_prediction_american > 0 %}
+                                                <td class="table-centered-data min-width-odds best-odds">{{ '+' ~ game.home_prediction_american }}</td>
+                                            {% else %}
+                                                <td class="table-centered-data min-width-odds best-odds">{{ game.home_prediction_american }}</td>
+                                            {% endif %}
+
+                                            <td class="table-centered-data min-width-ai" data-american="{{ game.home_prediction_american }}" data-probability="{{ game.home_prediction }}%">{{ game.home_prediction }}%</td>
+                                            <td class="table-centered-data min-width-expected-value">
+                                                <span class="ev-color">{{ game.home_expected_value }}%</span>
+                                            </td>
+                                            <td class="table-centered-data min-width-odds">${{ game.home_expected_value_bet }}</td>
+                                            <td class="table-centered-data min-width-odds">{{ game.kelly_home_bet | round(2) }}</td>
+                                            <td class="table-centered-data min-width-odds">$ {{ game.kelly_gross_home | round(2) }}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <a href="{{ url_for('baseball.game', game_id=game.id) }}" class="btn btn-3 icon-heart moresportsbook-btn">More Sportsbooks > </a>
                             </div>
-                            {% endif %}
-
-                        {% endfor %}
-
-                    
-                    
-                    </div>
-                </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
         </div>
-         
-     
+    </div>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const gameTimeElements = document.querySelectorAll(".local-game-time");
@@ -189,113 +156,177 @@
                     } else {
                         aiOddsElement.textContent = aiOddsElement.getAttribute("data-probability");
                     }
-    });
-}
+                });
+            }
     
             // Add event listener for the switch
             const toggleOdds = document.getElementById("toggleOdds");
             toggleOdds.addEventListener("change", updateAiColumn);
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // ... All existing scripts ...
 
+            // Auto-refresh the page every 5 minutes (300000 milliseconds)
+            setTimeout(() => {
+                location.reload();
+            }, 60000);
+        });
+    </script>
     <script>
         // ... All existing scripts ...
 
-        // Auto-refresh the page every 5 minutes (300000 milliseconds)
-        setTimeout(() => {
-            location.reload();
-        }, 60000);
+        // Set the refresh interval in seconds
+        var refreshInterval = 300; // 1 minute
+
+        // Get the countdown timer element
+        var countdownTimer = document.getElementById("countdown-timer");
+
+        // Initialize the countdown
+        updateCountdown();
+
+        // Update the countdown every second
+        setInterval(updateCountdown, 1000);
+
+        // Function to update the countdown timer
+        function updateCountdown() {
+            countdownTimer.textContent = "Auto-Refresh: " + refreshInterval + "s";
+            refreshInterval--;
+
+            if (refreshInterval < 0) {
+                refreshContent();
+                refreshInterval = 300; // Reset the interval after refreshing
+            }
+        }
+
+        function refreshContent() {
+            const xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    document.getElementById("content-to-refresh").innerHTML = xhr.responseText;
+                    // Call any functions that need to be reinitialized after the content has been updated
+                    updateAiColumn();
+                    updateBestOddsColumn();
+                    updateExpectedValueColors();
+                }
+            };
+            xhr.open("GET", window.location.href, true);
+            xhr.send();
+        }
     </script>
     <script>
-     function updateExpectedValueColors() {
-    const expectedValueElements = document.querySelectorAll(".min-width-expected-value");
+        // ... All existing scripts ...
 
-    expectedValueElements.forEach((expectedValueElement) => {
-        const expectedValue = parseFloat(expectedValueElement.textContent);
-
-        if (expectedValue >= 1 && expectedValue <= 10) {
-            expectedValueElement.style.color = '#90F5BB'; // light-green font
-        } else if (expectedValue > 10) {
-            expectedValueElement.style.color = '#28a745'; // dark-green font
-        } else if (expectedValue >= -10 && expectedValue < 0) {
-            expectedValueElement.style.color = '#EB584D'; // light-red font
-        } else if (expectedValue < -10) {
-            expectedValueElement.style.color = '#dc3545'; // dark-red font
-        }
-    });
-}
-    document.addEventListener("DOMContentLoaded", function() {
-        // ... Existing code ...
-        updateExpectedValueColors();
-       
-    });
-
-    </script>
-   
-    <script>
-         // Set the refresh interval in seconds
-    var refreshInterval = 60; // 1 minute
-    
-    // Get the countdown timer element
-    var countdownTimer = document.getElementById("countdown-timer");
-    
-    // Initialize the countdown
-    updateCountdown();
-    
-    // Update the countdown every second
-    setInterval(updateCountdown, 1000);
-    
-    // Function to update the countdown timer
-    function updateCountdown() {
-        countdownTimer.textContent = "Auto-Refresh: "+ refreshInterval + "s";
-        refreshInterval--;
-    
-        if (refreshInterval < 0) {
-            refreshContent();
-            refreshInterval = 60; // Reset the interval after refreshing
-        }
-    }
-    function refreshContent() {
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-        if (xhr.readyState == 4 && xhr.status == 200) {
-            document.getElementById("content-to-refresh").innerHTML = xhr.responseText;
-            // Call any functions that need to be reinitialized after the content has been updated
-            updateAiColumn();
-            updateBestOddsColumn();
-            updateExpectedValueColors();
-        }
-    };
-    xhr.open("GET", window.location.href, true);
-    xhr.send();
-}
-    
-   
-    </script>
-    <script>
-        
-       
-    
         // Calculate the Kelly bet
         function calculateKelly() {
             const bankroll = parseFloat(document.getElementById("bankroll").value);
             const betOdds = parseFloat(document.getElementById("betOdds").value);
             const aiOdds = parseFloat(document.getElementById("aiOdds").value);
-    
+
             if (bankroll && betOdds && aiOdds) {
                 const betProbability = (betOdds > 0) ? (100 / (betOdds + 100)) : (-betOdds / (-betOdds + 100));
                 const aiProbability = (aiOdds > 0) ? (100 / (aiOdds + 100)) : (-aiOdds / (-aiOdds + 100));
-    
+
                 const kellyFraction = ((aiProbability * (betOdds + 1)) - 1) / betOdds;
                 const kellyBet = bankroll * kellyFraction;
-    
+
                 document.getElementById("kellyResult").textContent = `Kelly Bet: $${kellyBet.toFixed(2)}`;
             } else {
                 document.getElementById("kellyResult").textContent = "";
             }
         }
-    
+
         document.getElementById("calculateKelly").addEventListener("click", calculateKelly);
     </script>
-        
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add event listener for the AI odds switch
+            const toggleAiOdds = document.getElementById("toggleAiOdds");
+            toggleAiOdds.addEventListener("change", updateAiColumn);
+
+            // Add event listener for the Best odds switch
+            const toggleBestOdds = document.getElementById("toggleBestOdds");
+            toggleBestOdds.addEventListener("change", updateBestOddsColumn);
+        });
+
+        function updateAiColumn() {
+            const aiOddsElements = document.querySelectorAll(".min-width-ai");
+            const isChecked = document.getElementById("toggleAiOdds").checked;
+
+            aiOddsElements.forEach((aiOddsElement) => {
+                if (isChecked) {
+                    let americanOdds = aiOddsElement.getAttribute("data-american");
+                    if (parseInt(americanOdds) > 0) {
+                        americanOdds = "+" + americanOdds;
+                    }
+                    aiOddsElement.textContent = americanOdds;
+                } else {
+                    aiOddsElement.textContent = aiOddsElement.getAttribute("data-probability") + "%";
+                }
+            });
+        }
+
+        function updateBestOddsColumn() {
+            const bestOddsElements = document.querySelectorAll(".best-odds");
+            const isChecked = document.getElementById("toggleBestOdds").checked;
+
+            bestOddsElements.forEach((bestOddsElement) => {
+                if (isChecked) {
+                    let americanOdds = bestOddsElement.getAttribute("data-american");
+                    if (parseInt(americanOdds) > 0) {
+                        americanOdds = "+" + americanOdds;
+                    }
+                    bestOddsElement.textContent = americanOdds;
+                } else {
+                    bestOddsElement.textContent = bestOddsElement.getAttribute("data-probability") + "%";
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        // Call the load function on page load
+        window.onload = loadKellyMultiplierValue;
+
+        function storeKellyMultiplierValue(value) {
+            // Store the current value to localStorage
+            localStorage.setItem("kelly_multiplier", value);
+        }
+
+        function loadKellyMultiplierValue() {
+            // Load the saved value from localStorage, or default to 1 if there is none
+            let savedValue = localStorage.getItem("kelly_multiplier") || 1;
+
+            // Set the value of the slider
+            document.getElementById("kelly_multiplier").value = savedValue;
+
+            // Update the display
+            updateKellyValue(savedValue);
+        }
+    </script>
+
+<script>
+    function updateExpectedValueColors() {
+        const expectedValueElements = document.querySelectorAll(".min-width-expected-value");
+
+        expectedValueElements.forEach((expectedValueElement) => {
+            const expectedValue = parseFloat(expectedValueElement.textContent);
+
+            if (expectedValue >= 1 && expectedValue <= 10) {
+                expectedValueElement.style.color = '#90F5BB'; // light-green font
+            } else if (expectedValue > 10) {
+                expectedValueElement.style.color = '#28a745'; // dark-green font
+            } else if (expectedValue >= -10 && expectedValue < 0) {
+                expectedValueElement.style.color = '#EB584D'; // light-red font
+            } else if (expectedValue < -10) {
+                expectedValueElement.style.color = '#dc3545'; // dark-red font
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // ... Existing code ...
+        updateExpectedValueColors();
+    });
+</script>
 {% endblock %}

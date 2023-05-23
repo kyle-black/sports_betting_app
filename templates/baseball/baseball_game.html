@@ -1,9 +1,22 @@
-{% extends 'base.html' %}
+{% extends 'base3.html' %}
 
 {% block content %}
     <div id="countdown-timer" class="countdown-timer"></div>
     <h3 class="heading-spacing">{{ game.away_team }} at {{ game.home_team }}</h3>
-    <p id="local-game-time">Game Time: {{ game.commence_time }}</p>
+    <p id="local-game-time">Game time: <time class="local-game-time" data-commence-time="{{ game.commence_time }}"></time></p>
+    
+
+   <!-- <div class="parameters">
+        <form class="bankroll-form" action="{{ url_for('baseball.game', game_id=game.id) }}" method="POST">
+            <label for="bankroll">Bankroll:</label>
+            <input class="bankroll-input" type="number" id="bankroll" name="bankroll" min="0" step=".01" value="{{ bankroll }}" required>
+            <input class="bankroll" type="submit" value="Submit">
+            
+        </form>
+    
+        <h3 class="bankroll-output">Current Bankroll:  ${{ bankroll }}</h3>
+        </div> -->
+    
 
     <table class="table table-striped">
         <thead>
@@ -21,6 +34,7 @@
                 <th>HOME EV%</th>
                 <th>Kelly Multiplier</th>
                 <th>Kelly Gross</th>
+                <th>Sportsbook</th>
                 
 
             </tr>
@@ -42,14 +56,14 @@
                     <td class="table-centered-data min-width-expected-value">{{ bookmaker.home_expected_value }}%</td>
                     <td class="table-centered-data min-width-expected-value">{{bookmaker.kelly_home_bet | round(2)}}</td>
                     <td class="table-centered-data min-width-expected-value">${{bookmaker.kelly_home_gross | round(2)}}</td>
-
+                    <td>{{ bookmaker.title }}</td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
 
     
-    <a href="{{ url_for('baseball.index') }}" class="btn btn-3 icon-heart moresportsbook-btn"> All Games </a>
+    <a href="{{ url_for('baseball.mlb_index') }}" class="btn btn-3 icon-heart moresportsbook-btn"> All Games </a>
         
     <script>
         document.addEventListener("DOMContentLoaded", function() {

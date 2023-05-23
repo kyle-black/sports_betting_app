@@ -20,51 +20,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
-                <a class="navbar-brand" href="{{ url_for('index') }}">Sports Betting App</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav mr-auto">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownSports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Sports
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="navbarDropdownSports">
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Baseball</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="{{ url_for('baseball.mlb_index') }}">MLB</a></li>
-                                    </ul>
-                                </li>
-
-                            </ul>
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Basketball</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="" class="dropdown-item">NBA</a></li>
-                                        <li><a href="" class="dropdown-item">NCAAB</a></li>
-                                      
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Football</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="" class="dropdown-item">NFL</a></li>
-                                        <li><a href="" class="dropdown-item">NCAAF</a></li>
-                                      
-                                    </ul>
-                                </li>
-                                <li class="dropdown-submenu">
-                                    <a class="dropdown-item dropdown-toggle" href="#">Hockey</a>
-                                    <ul class="dropdown-menu">
-                                        <li><a href="" class="dropdown-item">NHL</a></li>
-                                        
-                                     
-                                    </ul>
-                                </li>
-                            </ul>
-                        </li>
+                
                         <li class="nav-item">
                             <a class="nav-link">EV Betting</a>
                         </li>
@@ -87,7 +43,7 @@
                         {% endif %}
                     </ul>
                 </div>
-            </div>
+            
         </nav>
     </header>
 
