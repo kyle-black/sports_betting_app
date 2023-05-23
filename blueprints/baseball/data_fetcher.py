@@ -1,5 +1,7 @@
 import requests
 import json
+import redis
+import os
 
 
 def fetch_and_store_data(redis_client):
@@ -89,3 +91,14 @@ def fetch_and_store_data(redis_client):
 
 
 #print(fetch_and_store_data())
+if __name__ in "__main__":
+    REDIS_KEY = "mlb_data"
+
+    REDIS_HOST = os.getenv('REDIS_URL')
+    redis_client = redis.Redis(host=REDIS_HOST)
+    
+    fetch_and_store_data(redis_client)
+    redis_data = redis_client.get(REDIS_KEY)
+    data = json.loads(redis_data)
+
+    print(data)
