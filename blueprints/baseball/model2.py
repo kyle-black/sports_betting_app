@@ -9,8 +9,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import os
 
 
-REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
-REDIS_PORT = 6379  # Replace with your Redis server's port
+#REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
+#REDIS_PORT = 6379  # Replace with your Redis server's port
 REDIS_HOST = os.getenv('REDIS_URL')
 REDIS_PORT = os.getenv('REDIS_PORT')
 redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
@@ -18,12 +18,12 @@ redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
 REDIS_KEY = "mlb_data"  # Replace with the actual key for the MLB data in Redis
 
 # Get the data from Redis
-redis_data = redis_client.get(REDIS_KEY)
+#redis_data = redis_client.get(REDIS_KEY)
 
 
 
-data = json.loads(redis_data)
-print(data)
+#data = json.loads(redis_data)
+#print(data)
 
 
 
@@ -151,6 +151,8 @@ def make_predictions(redis_df):
     
 def main():
     fetch_and_store_data(redis_client)
+    redis_data = redis_client.get(REDIS_KEY)
+    data = json.loads(redis_data)
 
     
     
