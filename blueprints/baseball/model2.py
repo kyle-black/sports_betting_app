@@ -8,67 +8,23 @@ from data_fetcher import fetch_and_store_data
 from apscheduler.schedulers.blocking import BlockingScheduler
 import os
 
+
+REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
+REDIS_PORT = 6379  # Replace with your Redis server's port
 REDIS_HOST = os.getenv('REDIS_URL')
-#REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
-#REDIS_PORT = '31149'
-  # Replace with your Redis server's port
-#redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
-redis_client = redis.Redis(host=REDIS_HOST)
+REDIS_PORT = os.getenv('REDIS_PORT')
+redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
 
 REDIS_KEY = "mlb_data"  # Replace with the actual key for the MLB data in Redis
 
 # Get the data from Redis
-#redis_data = redis_client.get(REDIS_KEY)
-
-#data = json.loads(redis_data)
-#print(data[0]['id'])
-#for i in data:
-#    print(i['id'])
-'''
-def preprocess_redis_data(redis_data):
-
-    extracted_data = []
-    for game in redis_data:
-        row = {
-            'game_id': game['id'],
-            'home_team': game['home_team'],
-            'away_team': game['away_team'],
-            'commence_time': game['commence_time'],
-            'game_date': None,  # This needs to be generated from 'commence_time' or provided separately
-            'season': None,  # This information is not provided in the sample data and needs to be added
-            'game_type': None  # This information is not provided in the sample data and needs to be added
-        }
-        for bookmaker in game['bookmakers']:
-            bookmaker_key = bookmaker['key']
-            for market in bookmaker['markets']:
-                if market['key'] == 'h2h':
-                    for outcome in market['outcomes']:
-                        if outcome['name'] == row['home_team']:
-                            row[f'{bookmaker_key}_home'] = outcome['price']
-                        elif outcome['name'] == row['away_team']:
-                            row[f'{bookmaker_key}_away'] = outcome['price']
-
-        extracted_data.append(row)
-    df = pd.DataFrame(extracted_data)
+redis_data = redis_client.get(REDIS_KEY)
 
 
-    grouped_df = df.groupby('game_id')
-    filled_df = grouped_df.apply(lambda x: x.fillna(method='bfill').fillna(method='ffill'))
-    filled_df = filled_df.reset_index(drop=True)
-    filtered_cols = df.filter(regex='(_home|_away)$').columns
 
-    for col in filtered_cols:
-        filled_df.loc[df[col] < -5000, col] = np.nan
+data = json.loads(redis_data)
+print(data)
 
-
-    for i in filtered_cols:
-        column_median = filled_df[i].median()
-        filled_df[i].fillna(column_median, inplace=True)
-
-    df= filled_df
-
-    return df
-'''
 
 
 
@@ -76,7 +32,7 @@ def preprocess_redis_data(redis_data):
 
 def preprocess_redis_data(redis_data):
     # Load the data as a JSON object
-    #data = json.loads(redis_data)
+   
 
     # Extract and reformat data into a list of dictionaries
     extracted_data = []
@@ -140,58 +96,13 @@ def preprocess_redis_data(redis_data):
 
 
     
-    #print(df[['home_team','away_team']])
-    
     return df
 
     
 
 
-#x =preprocess_redis_data(data)
   
-#print(x)
 
-
-
-
-   # return df
-  
-'''
-def make_predictions(redis_df):
-    # Load PCA and trained model
-    with open('pca.pkl', 'rb') as f:
-        pca = pickle.load(f)
-
-    with open('trained_model.pkl', 'rb') as f:
-        clf6 = pickle.load(f)
-
-    # Preprocess the Redis data to match the input format of the trained model
-    all_possible_columns = ['lowvig_home', 'lowvig_away', 'betonlineag_home', 'betonlineag_away',
-                            'unibet_home', 'unibet_away', 'draftkings_home', 'draftkings_away',
-                            'pointsbetus_home', 'pointsbetus_away', 'gtbets_home', 'gtbets_away',
-                            'mybookieag_home', 'mybookieag_away', 'bovada_home', 'bovada_away',
-                            'fanduel_home', 'fanduel_away',
-                            'intertops_home', 'intertops_away', 'williamhill_us_home',
-                            'williamhill_us_away', 'betrivers_home', 'betrivers_away',
-                            'betmgm_home', 'betmgm_away',
-                            'sugarhouse_home', 'sugarhouse_away', 'foxbet_home', 'foxbet_away',
-                            'barstool_home', 'barstool_away', 'twinspires_home', 'twinspires_away',
-                            'betus_home', 'betus_away', 'wynnbet_home', 'wynnbet_away',
-                            'circasports_home', 'circasports_away', 'superbook_home',
-                            'superbook_away', 'unibet_us_home', 'unibet_us_away']
-
-    X_redis = redis_df.loc[:, all_possible_columns]
-    X_redis_scaled = X_redis
-
-   # return X_redis_scaled
-    X_redis_reduced = pca.transform(X_redis_scaled)
-    #return X_redis_scaled.to_csv('test3.csv') 
-    # Make predictions and calculate probabilities
-    y_pred = clf6.predict(X_redis_reduced)
-    y_pred_proba = clf6.predict_proba(X_redis_reduced)
-
-    return y_pred, y_pred_proba
-'''
 
 def make_predictions(redis_df):
     # Load PCA and trained model
@@ -240,10 +151,6 @@ def make_predictions(redis_df):
     
 def main():
     fetch_and_store_data(redis_client)
-    
-    redis_data = redis_client.get(REDIS_KEY)
-
-    data = json.loads(redis_data)
 
     
     

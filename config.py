@@ -10,6 +10,7 @@ PRODUCTION_REDIS_PORT = os.getenv('PRODUCTION_REDIS_PORT')
 
 class Config(object):
     RQ_REDIS_URL = REDIS_URL = os.getenv('REDIS_URL')
+    
     DEBUG = False
     TESTING = False
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
