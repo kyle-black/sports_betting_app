@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 REDIS_HOST = os.getenv('REDIS_URL')
 REDIS_PORT = os.getenv('REDIS_PORT')
 
-parsed_url = urlparse.urlparse(REDIS_HOST)
+parsed_url = urlparse(REDIS_HOST)
 
 redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port)
 
