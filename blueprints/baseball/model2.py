@@ -17,7 +17,7 @@ REDIS_PORT = os.getenv('REDIS_PORT')
 
 parsed_url = urlparse(REDIS_HOST)
 
-redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port)
+redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port, password=parsed_url.password)
 
 
 
