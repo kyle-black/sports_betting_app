@@ -10,13 +10,13 @@ def fetch_and_store_data(redis_client):
     
     if response.status_code != 200:
         print("Error fetching data. Status code:", response.status_code)
-        return
+        
 
     data = response.json()
 
     if not data:
         print("No data fetched.")
-        return
+    
 
     print("Fetched data:", data)
 
@@ -28,6 +28,7 @@ def fetch_and_store_data(redis_client):
     
     try:
         redis_client.set("mlb_data", json.dumps(data))
+        print("Data stored in Redis.")
     except: ('no data to add to redis')
 
 
@@ -91,7 +92,7 @@ def fetch_and_store_data(redis_client):
     
     
     
-    print("Data stored in Redis.")
+   
 
 
 #print(fetch_and_store_data())

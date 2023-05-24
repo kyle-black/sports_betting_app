@@ -150,7 +150,10 @@ def make_predictions(redis_df):
 
     
 def main():
-    fetch_and_store_data(redis_client)
+    #print(fetch_and_store_data(redis_client))
+    redis_data = redis_client.get(REDIS_KEY)
+    #print(redis_data)
+    
     redis_data = redis_client.get(REDIS_KEY)
     data = json.loads(redis_data)
 
@@ -178,7 +181,7 @@ def main():
     print(team_probabilities)
 
     redis_client.set("mlb_predictions", json.dumps(team_probabilities))
-
+    
 
 if __name__ in "__main__":
     #scheduler = BlockingScheduler()
