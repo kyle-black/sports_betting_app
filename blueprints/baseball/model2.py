@@ -7,13 +7,22 @@ import redis
 from data_fetcher import fetch_and_store_data
 from apscheduler.schedulers.blocking import BlockingScheduler
 import os
+from urllib.parse import urlparse
 
 
 #REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
 #REDIS_PORT = 6379  # Replace with your Redis server's port
 REDIS_HOST = os.getenv('REDIS_URL')
 REDIS_PORT = os.getenv('REDIS_PORT')
-redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
+
+parsed_url = urlparse.urlparse(REDIS_HOST)
+
+redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port)
+
+
+
+
+#redis_client = redis.Redis(host=REDIS_HOST, port=REDIS_PORT)
 
 REDIS_KEY = "mlb_data"  # Replace with the actual key for the MLB data in Redis
 
