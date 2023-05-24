@@ -22,10 +22,13 @@ def fetch_and_store_data(redis_client):
 
     # Store the data in Redis with an expiration time (e.g., 5 minutes)
     
-    redis_client.delete('mlb_data')
+    try:
+        redis_client.delete('mlb_data')
+    except: ('nothing to delete')
     
-    redis_client.set("mlb_data", json.dumps(data))
-
+    try:
+        redis_client.set("mlb_data", json.dumps(data))
+    except: ('no data to add to redis')
 
 
 
