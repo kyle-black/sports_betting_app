@@ -9,6 +9,8 @@ Flask-Redis
 schedule
 pandas
 
+sklearn
+
 
 
 
