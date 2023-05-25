@@ -194,7 +194,12 @@ def main():
     
 
 if __name__ in "__main__":
-    scheduler = BlockingScheduler()
-    scheduler.add_job(main, 'interval', minutes=5)
-    scheduler.start()
-    main()
+    #scheduler = BlockingScheduler()
+    #scheduler.add_job(main, 'interval', minutes=5)
+    #scheduler.start()
+    
+    try:
+        main()
+    except Exception as e:
+        print(e) 
+
