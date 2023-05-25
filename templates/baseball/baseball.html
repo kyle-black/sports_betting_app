@@ -175,46 +175,52 @@
         });
     </script>
     <script>
-        // ... All existing scripts ...
-
-        // Set the refresh interval in seconds
-        var refreshInterval = 300000; // 1 minute
-
-        // Get the countdown timer element
-        var countdownTimer = document.getElementById("countdown-timer");
-
-        // Initialize the countdown
-        updateCountdown();
-
-        // Update the countdown every second
-        setInterval(updateCountdown, 300000);
-
-        // Function to update the countdown timer
-        function updateCountdown() {
-            countdownTimer.textContent = "Auto-Refresh: " + refreshInterval + "s";
-            refreshInterval--;
-
-            if (refreshInterval < 0) {
-                refreshContent();
-                refreshInterval = 300000; // Reset the interval after refreshing
-            }
-        }
-
-        function refreshContent() {
-            const xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) {
-                    document.getElementById("content-to-refresh").innerHTML = xhr.responseText;
-                    // Call any functions that need to be reinitialized after the content has been updated
-                    updateAiColumn();
-                    updateBestOddsColumn();
-                    updateExpectedValueColors();
+        document.addEventListener("DOMContentLoaded", function() {
+            // Auto-refresh the page every 5 minutes (300000 milliseconds)
+            setTimeout(() => {
+                location.reload();
+            }, 300000);
+    
+            // Set the refresh interval in seconds
+            var refreshInterval = 300; // 5 minutes
+    
+            // Get the countdown timer element
+            var countdownTimer = document.getElementById("countdown-timer");
+    
+            // Initialize the countdown
+            updateCountdown();
+    
+            // Update the countdown every second
+            setInterval(updateCountdown, 1000);
+    
+            // Function to update the countdown timer
+            function updateCountdown() {
+                countdownTimer.textContent = "Auto-Refresh: " + refreshInterval + "s";
+                refreshInterval--;
+    
+                if (refreshInterval < 0) {
+                    refreshContent();
+                    refreshInterval = 300; // Reset the interval after refreshing
                 }
-            };
-            xhr.open("GET", window.location.href, true);
-            xhr.send();
-        }
+            }
+    
+            function refreshContent() {
+                const xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        document.getElementById("content-to-refresh").innerHTML = xhr.responseText;
+                        // Call any functions that need to be reinitialized after the content has been updated
+                        updateAiColumn();
+                        updateBestOddsColumn();
+                        updateExpectedValueColors();
+                    }
+                };
+                xhr.open("GET", window.location.href, true);
+                xhr.send();
+            }
+        });
     </script>
+    
     <script>
         // ... All existing scripts ...
 
