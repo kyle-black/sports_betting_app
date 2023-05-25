@@ -199,12 +199,12 @@ def main():
 if __name__ in "__main__":
     current_time = datetime.now().time()
     print("StartTime:",current_time)
-    scheduler = BlockingScheduler()
-    scheduler.add_job(main, 'interval', minutes=5)
-    scheduler.start()
+    #scheduler = BlockingScheduler()
+    #scheduler.add_job(main, 'interval', minutes=5)
+    #scheduler.start()
     print("Pull Time",current_time)
 
-    schedule.every(5).minutes.do(main)
+    schedule.every(1).minutes.do(main)
 
     while True:
         schedule.run_pending()
