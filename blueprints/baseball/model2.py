@@ -9,7 +9,8 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 import os
 from urllib.parse import urlparse
 from datetime import datetime
-
+import schedule
+import time
 
 #REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
 #REDIS_PORT = 6379  # Replace with your Redis server's port
@@ -202,6 +203,12 @@ if __name__ in "__main__":
     scheduler.add_job(main, 'interval', minutes=5)
     scheduler.start()
     print("Pull Time",current_time)
+
+    schedule.every(5).minutes.do(main)
+
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
     
     #try:
     #    main()
