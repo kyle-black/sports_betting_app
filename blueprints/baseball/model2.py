@@ -165,6 +165,7 @@ def main():
     #print(redis_data)
     
     redis_data = redis_client.get(REDIS_KEY)
+    print(redis_data)
     data = json.loads(redis_data)
 
     
