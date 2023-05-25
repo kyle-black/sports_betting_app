@@ -18,7 +18,8 @@ REDIS_PORT = os.getenv('REDIS_PORT')
 parsed_url = urlparse(REDIS_HOST)
 
 redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port, password=parsed_url.password)
-
+#redis_client = redis.Redis(host=REDIS_HOST, port=6379)
+#redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port)
 
 
 
@@ -193,7 +194,7 @@ def main():
     
 
 if __name__ in "__main__":
-    #scheduler = BlockingScheduler()
-    #scheduler.add_job(main, 'interval', minutes=5)
-    #scheduler.start()
+    scheduler = BlockingScheduler()
+    scheduler.add_job(main, 'interval', minutes=5)
+    scheduler.start()
     main()
