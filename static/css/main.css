@@ -428,8 +428,8 @@ input:checked + .slider:before {
 
 .countdown-timer {
     position: absolute;
-    top: 6rem;
-    right: 15rem;
+    top: 10rem;
+    right: 16rem;
     font-size: 18px;
     font-weight: bold;
     background-color: rgba(0, 0, 0, 0.5);
@@ -503,7 +503,7 @@ input:checked + .slider:before {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: 100.4%;
+    width: 91.4%;
 }
 
 .bankroll-form {
@@ -581,7 +581,7 @@ h3.bankroll-output, .kelly-name, .kelly-output {
 
 #main {
   transition: margin-left .5s;
-  padding: 16px;
+  padding: 5rem;
 }
 
 @media screen and (max-height: 450px) {
