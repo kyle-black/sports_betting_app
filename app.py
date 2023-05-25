@@ -24,7 +24,7 @@ import requests
 import json
 import jsonify
 app = Flask(__name__)
-app.config.from_object('config.DevelopmentConfig') #Update this to run config on Development
+app.config.from_object('config.ProductionConfig') #Update this to run config on Development
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test2.db'
 redis_client = FlaskRedis(app)

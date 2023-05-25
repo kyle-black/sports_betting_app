@@ -427,9 +427,9 @@ input:checked + .slider:before {
 }
 
 .countdown-timer {
-    position: absolute;
-    top: 10rem;
-    right: 16rem;
+    position: relative;
+    top: -8.7rem;
+    right: -16rem;
     font-size: 18px;
     font-weight: bold;
     background-color: rgba(0, 0, 0, 0.5);
@@ -480,7 +480,7 @@ input:checked + .slider:before {
 
 .heading-spacing {
    /* Adjust this value to create more or less space */
-    padding-bottom: 3%;
+    padding-bottom: 2.5%;
 }
 
 .switch-container .other {
@@ -503,7 +503,7 @@ input:checked + .slider:before {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    width: 91.4%;
+    width: 84.4%;
 }
 
 .bankroll-form {

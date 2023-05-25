@@ -1,34 +1,36 @@
 {% extends 'base3.html' %}
 
 {% block content %}
-    <h1 class="heading-spacing">Upcoming MLB</h1>
     
     
-    <div class="parameters">
-        <form class="bankroll-form" action="{{ url_for('baseball.mlb_index') }}" method="POST">
-            <div class="form-item">
-                <label for="bankroll">Bankroll:</label>
-                <input class="bankroll-input" type="number" id="bankroll" name="bankroll" min="0" step=".01" value="{{ bankroll }}" required>
-            </div>
-            <div class="form-item">
-                <h3 class="bankroll-output">Current Bankroll:  ${{ bankroll }}</h3>
-            </div>
-            <div class="form-item">
-                <label class="kelly-name" for="kelly_multiplier">Kelly Multiplier:</label>
-                <input class="kelly-multiplier" type="range" id="kelly_multiplier" name="kelly_multiplier" min="0.5" max="2.0" step="0.25" value="{{ kelly_multiplier }}" oninput="updateKellyValue(value)" onchange="storeKellyMultiplierValue(value)">
-            </div>
-            <div class="form-item">
-                <h3 class="bankroll-output">Current Multiplier:  {{ kelly_multiplier }}</h3>
-            </div>
-            <div class="form-item">
-                <input class="bankroll" type="submit" value="Submit">
-            </div>
-        </form>
-    </div>
+    
+    
     
     <div class="main-container">
        
-        <div id="auto-refresh-container"> 
+        <div id="auto-refresh-container">
+            <h1 class="heading-spacing">Upcoming MLB</h1> 
+            <div class="parameters">
+                <form class="bankroll-form" action="{{ url_for('baseball.mlb_index') }}" method="POST">
+                    <div class="form-item">
+                        <label for="bankroll">Bankroll:</label>
+                        <input class="bankroll-input" type="number" id="bankroll" name="bankroll" min="0" step=".01" value="{{ bankroll }}" required>
+                    </div>
+                    <div class="form-item">
+                        <h3 class="bankroll-output">Current Bankroll:  ${{ bankroll }}</h3>
+                    </div>
+                    <div class="form-item">
+                        <label class="kelly-name" for="kelly_multiplier">Kelly Multiplier:</label>
+                        <input class="kelly-multiplier" type="range" id="kelly_multiplier" name="kelly_multiplier" min="0.5" max="2.0" step="0.25" value="{{ kelly_multiplier }}" oninput="updateKellyValue(value)" onchange="storeKellyMultiplierValue(value)">
+                    </div>
+                    <div class="form-item">
+                        <h3 class="bankroll-output">Current Multiplier:  {{ kelly_multiplier }}</h3>
+                    </div>
+                    <div class="form-item">
+                        <input class="bankroll" type="submit" value="Submit">
+                    </div>
+                </form>
+            </div>
             <div id="countdown-timer" class="countdown-timer"></div> 
             <div class="table-spacing">
                 {% for game in games %}
