@@ -198,13 +198,13 @@ def main():
 if __name__ in "__main__":
     current_time = datetime.now().time()
     print("StartTime:",current_time)
-   # scheduler = BlockingScheduler()
-    #scheduler.add_job(main, 'interval', minutes=5)
-    #scheduler.start()
-    #print("Pull Time",current_time)
+    scheduler = BlockingScheduler()
+    scheduler.add_job(main, 'interval', minutes=5)
+    scheduler.start()
+    print("Pull Time",current_time)
     
-    try:
-        main()
-    except Exception as e:
-        print(e) 
+    #try:
+    #    main()
+    #except Exception as e:
+    #    print(e) 
 
