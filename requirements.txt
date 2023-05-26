@@ -34,5 +34,7 @@ xgboost
 
 wtforms[email]
 
+psycopg2
+
 
 
