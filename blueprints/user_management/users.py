@@ -45,7 +45,7 @@ def signup():
     form = SignupForm()
     if form.validate_on_submit():
         print("Form validation successful")
-        user = User(username=form.username.data, subscription_status='inactive')  # User is inactive initially
+        user = User(email=form.email.data, subscription_status='inactive')  # User is inactive initially
         print("User object created")
         user.set_password(form.password.data)
         print("User password set")
@@ -53,8 +53,11 @@ def signup():
         print("User added to session")
         db.session.commit()
         print("Session committed")
+        login_user(user)
         flash('Congratulations, you are now a registered user! Please subscribe to access premium content.')
         return redirect(url_for('user_bp.subscription'))  # Redirects to the subscription page after successful signup
+    else:
+        print(form.errors)
     print("Render signup template")
     return render_template('signup.html', form=form)
 

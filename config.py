@@ -10,8 +10,8 @@ PRODUCTION_REDIS_PORT = os.getenv('PRODUCTION_REDIS_PORT')
 
 class Config(object):
     RQ_REDIS_URL = REDIS_URL = os.getenv('REDIS_URL')
+
     
-    DEBUG = False
     TESTING = False
     BASE_DIR = os.path.abspath(os.path.dirname(__file__))
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'test2.db')
@@ -22,8 +22,18 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 class TestingConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     TESTING = True
     
 
 class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     RQ_REDIS_URL = REDIS_URL = os.getenv('REDIS_URL')
+
+
+config_dict = {
+    'development': DevelopmentConfig,
+    'testing': TestingConfig,
+    'production': ProductionConfig,
+    'default': DevelopmentConfig
+}

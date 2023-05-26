@@ -23,50 +23,57 @@ from flask_login import current_user
 import requests
 import json
 import jsonify
-app = Flask(__name__)
-app.config.from_object('config.ProductionConfig') #Update this to run config on Development
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test2.db'
-redis_client = FlaskRedis(app)
-
-db.init_app(app)
+from config import config_dict
 
 
-with app.app_context():
-    db.create_all()
+def create_app(config_name):
+
+    app = Flask(__name__)
+    
+    app.config.from_object(config_dict[config_name])
+    
+    redis_client = FlaskRedis(app)
+
+    db.init_app(app)
 
 
-
-login_manager.init_app(app)
-
-
-
+    with app.app_context():
+        db.create_all()
 
 
 
-print("Calling fetch_and_store_data...")
-fetch_and_store_data(redis_client)
-
-# Register blueprints
-app.register_blueprint(baseball_bp, url_prefix='/baseball')
-app.register_blueprint(football_bp, url_prefix='/football')
-app.register_blueprint(basketball_bp, url_prefix='/basketball')
-app.register_blueprint(hockey_bp, url_prefix='/hockey')
-app.register_blueprint(soccer_bp, url_prefix='/soccer')
-app.register_blueprint(user_bp, url_prefix='/users')
-app.register_blueprint(stripe_bp, url_prefix='/stripe')
-app.register_blueprint(info_bp, url_prefix='/info')
-
-@app.route('/')
-def index():
-    return render_template('index.html')
+    login_manager.init_app(app)
 
 
-@app.context_processor
-def inject_user():
-    return dict(user=current_user)
 
 
+
+
+    print("Calling fetch_and_store_data...")
+    fetch_and_store_data(redis_client)
+
+    # Register blueprints
+    app.register_blueprint(baseball_bp, url_prefix='/baseball')
+    app.register_blueprint(football_bp, url_prefix='/football')
+    app.register_blueprint(basketball_bp, url_prefix='/basketball')
+    app.register_blueprint(hockey_bp, url_prefix='/hockey')
+    app.register_blueprint(soccer_bp, url_prefix='/soccer')
+    app.register_blueprint(user_bp, url_prefix='/users')
+    app.register_blueprint(stripe_bp, url_prefix='/stripe')
+    app.register_blueprint(info_bp, url_prefix='/info')
+
+    @app.route('/')
+    def index():
+        return render_template('index.html')
+
+
+    @app.context_processor
+    def inject_user():
+        return dict(user=current_user)
+    
+    return app
+
+app = create_app(os.getenv('FLASK_CONFIG', 'default'))
 
 
 if __name__ == '__main__':
