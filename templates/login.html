@@ -1,26 +1,57 @@
 {% extends "base3.html" %}
 
 {% block content %}
+<style>
+    .login-form {
+        width: 300px;
+        margin: 0 auto;
+        padding: 100px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        background-color: #389e90;
+    }
+    .login-form form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .login-form form label {
+        font-weight: bold;
+    }
+    .login-form form input[type="submit"] {
+        cursor: pointer;
+    }
+    .signup-link {
+        text-align: center;
+        margin-top: 10px;
+    }
+</style>
 <body>
-    <h2>Login</h2>
-    <form action="/users/login" method="post">
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" required><br>
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" required><br>
-        <input type="submit" value="Submit">
-    </form>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <ul class=flashes>
-        {% for category, message in messages %}
-            <li class="{{ category }}">{{ message }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
-    {% endwith %}
-
-
+    <div class="login-form">
+        <h2>Login</h2>
+        <form action="/users/login" method="post">
+            {{ form.hidden_tag() }}  <!-- This provides CSRF protection -->
+            <label for="email">Email:</label>
+            {{ form.email() }}
+            <label for="password">Password:</label>
+            {{ form.password() }}
+            <input type="submit" value="Submit">
+        </form>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class=flashes>
+            {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        {% endwith %}
+        <div class="signup-link">
+            <button type="button" class="btn btn-primary btn-lg">  <a href="{{ url_for('user_bp.signup') }}">Register for a New Account.</a> </button>
+        </div>
+    </div>
 </body>
+
 {% endblock %}
 </html>

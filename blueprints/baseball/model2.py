@@ -204,11 +204,11 @@ if __name__ in "__main__":
     #scheduler.start()
     print("Pull Time",current_time)
 
-    schedule.every(1).minutes.do(main)
+    schedule.every(5).minutes.do(main)
 
     while True:
         schedule.run_pending()
-        time.sleep(1)
+        time.sleep(5)
     
     #try:
     #    main()

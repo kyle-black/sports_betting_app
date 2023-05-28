@@ -613,3 +613,27 @@ h3.bankroll-output, .kelly-name, .kelly-output {
     font-family: 'Josefin Sans', sans-serif;
     color:#389e90;
 }
+
+.login-form {
+    width: 300px;
+    margin: 0 auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+}
+.login-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.login-form form label {
+    font-weight: bold;
+}
+.login-form form input[type="submit"] {
+    cursor: pointer;
+}
+.signup-link {
+    text-align: center;
+    margin-top: 10px;
+}

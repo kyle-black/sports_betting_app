@@ -2,7 +2,7 @@ from flask import Blueprint, request, redirect, jsonify
 import stripe
 import requests
 import json
-
+import os
 
 
 
@@ -10,7 +10,7 @@ stripe_bp = Blueprint('stripe_bp', __name__)
 
 
 
-YOUR_DOMAIN = 'http://localhost:5000'
+YOUR_DOMAIN = os.getenv('SITE_DOMAIN')
 stripe.api_key = 'pk_test_51N8T8MKVHJFy6fE2N62AaTGRJ7ifoNCv9RLJqoRVgwypsErQJ02SzwEWZBRjczyThp4TJppbsHdkWJ2fEyUG9SEk00G4wHQQa7'
 
 @stripe_bp.route('/create-checkout-session', methods=['POST'])
@@ -97,3 +97,4 @@ def webhook_received():
         print('Subscription canceled: %s', event.id)
 
     return jsonify({'status': 'success'})
+

@@ -4,11 +4,11 @@ from wtforms.validators import DataRequired, EqualTo, ValidationError, Email
 from .models import User
 
 class UniqueUsername:
-    def __init__(self, message="Username already exists."):
+    def __init__(self, message="Email already exists."):
         self.message = message
 
     def __call__(self, form, field):
-        user = User.query.filter_by(username=field.data).first()
+        user = User.query.filter_by(email=field.data).first()
         if user is not None:
             raise ValidationError(self.message)
 
@@ -19,7 +19,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 class SignupForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Email()])
+    email = StringField('Email', validators=[DataRequired(), Email(), UniqueUsername()])
     password = PasswordField('Password', validators=[DataRequired()])
     confirm_password = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
     remember_me = BooleanField('Remember Me')

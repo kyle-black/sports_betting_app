@@ -7,11 +7,14 @@ from .forms import SignupForm, LoginForm
 from .models import db, User
 from . import stripe_routes
 
+
 login_manager = LoginManager()
 
 user_bp = Blueprint('user_bp', __name__)
 
 #stripe.api_key = 'your-stripe-secret-key'
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -21,16 +24,25 @@ def load_user(user_id):
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        username = form.username.data
+        email = form.email.data
         password = form.password.data
-        user = User.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            login_user(user, remember=form.remember_me.data)
-            flash('Logged in successfully.', 'success')
-            return redirect(url_for('index'))
+        print(f"Email: {email}, Password: {password}")  # Debug print
 
+        user = User.query.filter_by(email=email).first()
+        if user:
+            print(f"User found: {user}")  # Debug print
+            if user.check_password(password):
+                login_user(user, remember=form.remember_me.data)
+                flash('Logged in successfully.', 'success')
+                return redirect(url_for('index'))
+            else:
+                print("Password check failed")  # Debug print
         else:
-            flash('Invalid username or password.', 'error')
+            print("No user found")  # Debug print
+
+        flash('Invalid email or password.', 'error')
+    else:
+        print(f"Form validation failed with errors: {form.errors}")  # Debug print
 
     return render_template('login.html', form=form)
 
@@ -60,6 +72,11 @@ def signup():
         print(form.errors)
     print("Render signup template")
     return render_template('signup.html', form=form)
+
+@user_bp.route('/success')
+def success():
+    x= "test"
+    return render_template('success.html', successful=x)
 
 
 @user_bp.route('/subscription', methods=['GET'])

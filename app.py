@@ -31,8 +31,13 @@ def create_app(config_name):
     app = Flask(__name__)
     
     app.config.from_object(config_dict[config_name])
+
+    
     
     redis_client = FlaskRedis(app)
+
+
+    
 
     db.init_app(app)
 
