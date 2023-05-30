@@ -77,7 +77,21 @@ def create_app(config_name):
     def inject_user():
         return dict(user=current_user)
     
+    @app.errorhandler(404)
+    def page_not_found(e):
+    # note that we set the 404 status explicitly
+        return render_template('404.html'), 404
+
+    @app.errorhandler(500)
+    def internal_server_error(e):
+    # note that we set the 500 status explicitly
+        return render_template('500.html'), 500
+    
     return app
+
+
+
+    
 
 app = create_app(os.getenv('FLASK_CONFIG', 'default'))
 
