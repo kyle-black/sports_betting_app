@@ -6,6 +6,8 @@ from flask_login import LoginManager
 from .forms import SignupForm, LoginForm
 from .models import db, User
 from . import stripe_routes
+import stripe
+import jsonify
 
 
 login_manager = LoginManager()
@@ -94,9 +96,28 @@ def premium_content():
 @user_bp.route('/charge', methods=['POST'])
 @login_required
 def charge():
-    amount = 500  # in cents
-    customer = stripe_routes.Customer.create(email=request.form['stripeEmail'], source=request.form['stripeToken'])
-    stripe_routes.Charge.create(customer=customer.id, amount=amount, currency='usd', description='Flask Charge')
-    current_user.subscription_status = 'active'
+    # amount = 500  # in cents
+    # Create a new Stripe customer
+    customer = stripe.Customer.create(email=current_user.email)
+    # Save the Stripe customer ID in your database
+    current_user.stripe_id = customer.id
     db.session.commit()
-    return redirect(url_for('premium_content'))
+
+    # Create a checkout session with the subscription price
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            customer=customer.id,
+            line_items=[
+                {
+                    'price': 'your_price_id',  # replace with your price id
+                    'quantity': 1,
+                },
+            ],
+            mode='subscription',
+            success_url=url_for('user_bp.success', _external=True) +
+            '?session_id={CHECKOUT_SESSION_ID}',
+            cancel_url=url_for('user_bp.subscription', _external=True),
+        )
+        return jsonify({'checkout_url': checkout_session.url}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400

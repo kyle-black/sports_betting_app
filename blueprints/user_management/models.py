@@ -9,6 +9,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     subscription_status = db.Column(db.String(64), default='inactive')
+    stripe_id = db.Column(db.String(128))  # new column for Stripe customer ID
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -21,6 +22,7 @@ class TestUser(UserMixin, db.Model):
     email = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     subscription_status = db.Column(db.String(64), default='inactive')
+    stripe_id = db.Column(db.String(128))  # new column for Stripe customer ID
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

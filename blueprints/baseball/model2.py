@@ -207,8 +207,12 @@ if __name__ in "__main__":
     schedule.every(5).minutes.do(main)
 
     while True:
-        schedule.run_pending()
-        time.sleep(5)
+        try:
+            schedule.run_pending()
+        except Exception as e:
+            print(e)
+        finally:
+            time.sleep(5)
     
     #try:
     #    main()
