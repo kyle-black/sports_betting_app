@@ -43,6 +43,7 @@ def create_app(config_name):
 
 
     with app.app_context():
+        db.drop_all()
         db.create_all()
 
 

@@ -34,7 +34,8 @@ xgboost
 
 wtforms[email]
 
-psycopg2
 
+
+alembic
 
 
