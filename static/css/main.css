@@ -239,12 +239,12 @@ input:checked + .slider:before {
 	border: none;
 	
 	font-size: inherit;
-	color: inherit;
-	background: none;
+	color: white;
+	background: #D95204;
 	cursor: pointer;
-	padding: 25px 80px;
+	padding: 7px 53px;
 	display: inline-block;
-	margin: 15px 30px;
+	margin: 15px -16px;
 	
 	letter-spacing: 1px;
 	font-weight: 700;
@@ -636,4 +636,8 @@ h3.bankroll-output, .kelly-name, .kelly-output {
 .signup-link {
     text-align: center;
     margin-top: 10px;
+}
+
+.a .register {
+    color:white;
 }

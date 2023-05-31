@@ -26,10 +26,13 @@
         text-align: center;
         margin-top: 10px;
     }
+    #login {
+        padding: 20%;
+    }
 </style>
 <body>
     <div class="login-form">
-        <h2>Login</h2>
+        <h2 id="login">Login</h2>
         <form action="/users/login" method="post">
             {{ form.hidden_tag() }}  <!-- This provides CSRF protection -->
             <label for="email">Email:</label>
@@ -48,7 +51,7 @@
         {% endif %}
         {% endwith %}
         <div class="signup-link">
-            <button type="button" class="btn btn-primary btn-lg">  <a href="{{ url_for('user_bp.signup') }}">Register for a New Account.</a> </button>
+            <button type="button" class="btn btn-primary btn-lg">  <a class="register" href="{{ url_for('user_bp.signup') }}">Register for a New Account.</a> </button>
         </div>
     </div>
 </body>
