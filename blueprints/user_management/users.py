@@ -8,6 +8,7 @@ from .models import db, User
 from . import stripe_routes
 import stripe
 import jsonify
+from urllib.parse import quote
 
 
 login_manager = LoginManager()
@@ -84,7 +85,9 @@ def success():
 @user_bp.route('/subscription', methods=['GET'])
 @login_required
 def subscription():
-    return render_template('subscription.html')
+    email_encoded = quote(current_user.email)  # URL encoding the email
+    stripe_url = f"https://buy.stripe.com/test_dR64jl8Vg6mx5ry000?prefilled_email={email_encoded}"
+    return render_template('subscription.html', stripe_url=stripe_url)
 
 @user_bp.route('/premium_content')
 @login_required

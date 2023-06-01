@@ -4,49 +4,32 @@ import stripe.error
 import requests
 import json
 import os
+from .models import db, User  
 
 stripe_bp = Blueprint('stripe_bp', __name__)
 
-YOUR_DOMAIN = os.getenv('SITE_DOMAIN')
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
 @stripe_bp.route('/create-checkout-session', methods=['POST'])
 def create_checkout_session():
     try:
-        prices = stripe.Price.list(
-            lookup_keys=[request.form['lookup_key']],
-            expand=['data.product']
-        )
-
         checkout_session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
             line_items=[
                 {
-                    'price': prices.data[0].id,
+                    'price': os.getenv('STRIPE_PRICE_ID'),
                     'quantity': 1,
                 },
             ],
             mode='subscription',
-            success_url=YOUR_DOMAIN +
+            success_url=os.getenv('SITE_DOMAIN') +
             '/success.html?session_id={CHECKOUT_SESSION_ID}',
-            cancel_url=YOUR_DOMAIN + '/cancel.html',
+            cancel_url=os.getenv('SITE_DOMAIN') + '/cancel.html',
         )
         return redirect(checkout_session.url, code=303)
     except Exception as e:
         print(e)
         return "Server error", 500
-
-@stripe_bp.route('/create-portal-session', methods=['POST'])
-def customer_portal():
-    checkout_session_id = request.form.get('session_id')
-    checkout_session = stripe.checkout.Session.retrieve(checkout_session_id)
-
-    return_url = YOUR_DOMAIN
-
-    portalSession = stripe.billing_portal.Session.create(
-        customer=checkout_session.customer,
-        return_url=return_url,
-    )
-    return redirect(portalSession.url, code=303)
 
 @stripe_bp.route('/webhook', methods=['POST'])
 def webhook_received():
@@ -72,13 +55,24 @@ def webhook_received():
 
     if event_type == 'checkout.session.completed':
         print('🔔 Payment succeeded!')
-    elif event_type == 'customer.subscription.trial_will_end':
-        print('Subscription trial will end')
+    user = User.query.filter_by(stripe_id=data_object['customer']).first()
+    if user:
+        user.subscription_status = 'active'
+        db.session.commit()
+
     elif event_type == 'customer.subscription.created':
-        print('Subscription created %s', event.id)
-    elif event_type == 'customer.subscription.updated':
-        print('Subscription created %s', event.id)
+        print('Subscription created %s', data_object['id'])
+    user = User.query.filter_by(stripe_id=data_object['customer']).first()
+    if user:
+        user.subscription_status = 'active'
+        user.stripe_subscription_id = data_object['id']
+        db.session.commit()
+
     elif event_type == 'customer.subscription.deleted':
-        print('Subscription canceled: %s', event.id)
+        print('Subscription canceled: %s', data_object['id'])
+    user = User.query.filter_by(stripe_id=data_object['customer']).first()
+    if user:
+        user.subscription_status = 'inactive'
+        db.session.commit()
 
     return jsonify({'status': 'success'})
