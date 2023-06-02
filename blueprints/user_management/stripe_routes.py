@@ -49,30 +49,30 @@ def webhook_received():
     else:
         data = request_data['data']
         event_type = request_data['type']
-    data_object = data['object']
 
+    data_object = data['object']
     print('event ' + event_type)
 
     if event_type == 'checkout.session.completed':
         print('🔔 Payment succeeded!')
-    user = User.query.filter_by(stripe_id=data_object['customer']).first()
-    if user:
-        user.subscription_status = 'active'
-        db.session.commit()
+        user = User.query.filter_by(stripe_id=data_object['customer']).first()
+        if user:
+            user.subscription_status = 'active'
+            db.session.commit()
 
     elif event_type == 'customer.subscription.created':
         print('Subscription created %s', data_object['id'])
-    user = User.query.filter_by(stripe_id=data_object['customer']).first()
-    if user:
-        user.subscription_status = 'active'
-        user.stripe_subscription_id = data_object['id']
-        db.session.commit()
+        user = User.query.filter_by(stripe_id=data_object['customer']).first()
+        if user:
+            user.subscription_status = 'active'
+            user.stripe_subscription_id = data_object['id']
+            db.session.commit()
 
     elif event_type == 'customer.subscription.deleted':
         print('Subscription canceled: %s', data_object['id'])
-    user = User.query.filter_by(stripe_id=data_object['customer']).first()
-    if user:
-        user.subscription_status = 'inactive'
-        db.session.commit()
+        user = User.query.filter_by(stripe_id=data_object['customer']).first()
+        if user:
+            user.subscription_status = 'inactive'
+            db.session.commit()
 
     return jsonify({'status': 'success'})
