@@ -59,18 +59,25 @@ def logout():
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
-        print("Form validation successful")
-        user = User(email=form.email.data, subscription_status='inactive')  # User is inactive initially
-        print("User object created")
-        user.set_password(form.password.data)
-        print("User password set")
-        db.session.add(user)
-        print("User added to session")
-        db.session.commit()
-        print("Session committed")
-        login_user(user)
-        flash('Congratulations, you are now a registered user! Please subscribe to access premium content.')
-        return redirect(url_for('user_bp.subscription'))  # Redirects to the subscription page after successful signup
+        try:
+            print("Form validation successful")
+            # Create a new Stripe customer
+            customer = stripe.Customer.create(email=form.email.data)
+            # Create a new User instance
+            user = User(email=form.email.data, stripe_id=customer.id, subscription_status='inactive')  # User is inactive initially
+            print("User object created")
+            user.set_password(form.password.data)
+            print("User password set")
+            db.session.add(user)
+            print("User added to session")
+            db.session.commit()
+            print("Session committed")
+            login_user(user)
+            flash('Congratulations, you are now a registered user! Please subscribe to access premium content.')
+            return redirect(url_for('user_bp.subscription'))  # Redirects to the subscription page after successful signup
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            flash('An error occurred while registering. Please try again.', 'error')
     else:
         print(form.errors)
     print("Render signup template")
@@ -99,17 +106,10 @@ def premium_content():
 @user_bp.route('/charge', methods=['POST'])
 @login_required
 def charge():
-    # amount = 500  # in cents
-    # Create a new Stripe customer
-    customer = stripe.Customer.create(email=current_user.email)
-    # Save the Stripe customer ID in your database
-    current_user.stripe_id = customer.id
-    db.session.commit()
-
     # Create a checkout session with the subscription price
     try:
         checkout_session = stripe.checkout.Session.create(
-            customer=customer.id,
+            customer=current_user.stripe_id,  # Use stored Stripe customer ID
             line_items=[
                 {
                     'price': 'your_price_id',  # replace with your price id
