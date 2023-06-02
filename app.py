@@ -16,7 +16,7 @@ from flask_login import LoginManager
 from blueprints.user_management.users import login_manager
 from blueprints.info import info_bp
 
-
+from flask_migrate import Migrate  # new
 from blueprints.user_management.models import db
 from flask_login import current_user
 
@@ -29,32 +29,14 @@ from config import config_dict
 def create_app(config_name):
 
     app = Flask(__name__)
-    
     app.config.from_object(config_dict[config_name])
-
-    
     
     redis_client = FlaskRedis(app)
 
-
-    
-
     db.init_app(app)
-
-
-    with app.app_context():
-       
-       # db.drop_all()
-        db.create_all()
-
-
+    migrate = Migrate(app, db)  # new
 
     login_manager.init_app(app)
-
-
-
-
-
 
     print("Calling fetch_and_store_data...")
     fetch_and_store_data(redis_client)
@@ -73,29 +55,17 @@ def create_app(config_name):
     def index():
         return render_template('index.html')
 
-
     @app.context_processor
     def inject_user():
         return dict(user=current_user)
     
     @app.errorhandler(404)
     def page_not_found(e):
-    # note that we set the 404 status explicitly
         return render_template('404.html'), 404
-
-   # @app.errorhandler(500)
-   # def internal_server_error(e):
-    # note that we set the 500 status explicitly
-   #     return render_template('500.html'), 500
     
     return app
 
-
-
-    
-
 app = create_app(os.getenv('FLASK_CONFIG', 'default'))
-
 
 if __name__ == '__main__':
     app.run()

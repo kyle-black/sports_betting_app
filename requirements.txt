@@ -34,7 +34,9 @@ xgboost
 
 wtforms[email]
 
-
 psycopg2 
+
+Flask-Migrate
+
 
 
