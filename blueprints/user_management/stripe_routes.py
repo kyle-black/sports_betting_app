@@ -4,7 +4,8 @@ import stripe.error
 import requests
 import json
 import os
-from .models import db, User  
+from .models import db, User
+import logging
 
 stripe_bp = Blueprint('stripe_bp', __name__)
 
@@ -59,7 +60,9 @@ def webhook_received():
         if user:
             user.subscription_status = 'active'
             db.session.commit()
-
+            logging.info(f'User {user.id} subscription status updated to active')
+        else:
+            logging.error(f'No user found with stripe_id {data_object["customer"]}')
     elif event_type == 'customer.subscription.created':
         print('Subscription created %s', data_object['id'])
         user = User.query.filter_by(stripe_id=data_object['customer']).first()
