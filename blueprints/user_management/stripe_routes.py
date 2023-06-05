@@ -6,6 +6,7 @@ import json
 import os
 from .models import db, User
 import logging
+from flask_login import login_required, current_user
 
 stripe_bp = Blueprint('stripe_bp', __name__)
 
@@ -15,6 +16,7 @@ stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 def create_checkout_session():
     try:
         checkout_session = stripe.checkout.Session.create(
+            customer=current_user.stripe_id, # Use stored Stripe customer ID
             payment_method_types=['card'],
             line_items=[
                 {

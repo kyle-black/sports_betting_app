@@ -82,6 +82,7 @@ def signup():
         login_user(user)
         flash('Congratulations, you are now a registered user! Please subscribe to access premium content.')
         return redirect(url_for('user_bp.subscription'))  # Redirects to the subscription page after successful signup
+
     else:
         print(form.errors)
     print("Render signup template")
