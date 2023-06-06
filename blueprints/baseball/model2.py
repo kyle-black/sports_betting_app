@@ -15,7 +15,7 @@ import time
 #REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
 #REDIS_PORT = 6379  # Replace with your Redis server's port
 REDIS_HOST = os.getenv('REDIS_URL')
-REDIS_PORT = os.getenv('REDIS_PORT')
+#REDIS_PORT = os.getenv('REDIS_PORT')
 
 parsed_url = urlparse(REDIS_HOST)
 
@@ -36,6 +36,7 @@ REDIS_KEY = "mlb_data"  # Replace with the actual key for the MLB data in Redis
 
 #data = json.loads(redis_data)
 #print(data)
+
 
 
 
@@ -118,8 +119,8 @@ def preprocess_redis_data(redis_data):
 
 def make_predictions(redis_df):
     # Load PCA and trained model
-    with open('pca.pkl', 'rb') as f:
-        pca = pickle.load(f)
+    #with open('pca.pkl', 'rb') as f:
+    #    pca = pickle.load(f)
     with open('trained_model2.pkl', 'rb') as f:
         model = pickle.load(f)
 
@@ -146,10 +147,11 @@ def make_predictions(redis_df):
     # Apply PCA
 
     #print(X_redis.isnull().sum())
-    X_redis_reduced = pca.transform(X_redis)
+    #X_redis_reduced = pca.transform(X_redis)
 
     # Make predictions
-    predictions = model.predict_proba(X_redis_reduced)
+    #predictions = model.predict_proba(X_redis_reduced)
+    predictions = model.predict_proba(X_redis)
 
 
      
@@ -157,7 +159,10 @@ def make_predictions(redis_df):
     
 
 
-# Preprocess the Redis data
+# Preprocess the Redis data\\\
+
+
+
 
 
     
@@ -173,7 +178,7 @@ def main():
     
     
     redis_df = preprocess_redis_data(data)
-    #print(redis_df)
+    print(redis_df)
 
 
     predictions =make_predictions(redis_df)
@@ -218,4 +223,3 @@ if __name__ in "__main__":
     #    main()
     #except Exception as e:
     #    print(e) 
-
