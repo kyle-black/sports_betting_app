@@ -121,7 +121,7 @@ def make_predictions(redis_df):
     # Load PCA and trained model
     #with open('pca.pkl', 'rb') as f:
     #    pca = pickle.load(f)
-    with open('trained_model2.pkl', 'rb') as f:
+    with open('trained_model4.pkl', 'rb') as f:
         model = pickle.load(f)
 
     # Filter columns for X_redis
