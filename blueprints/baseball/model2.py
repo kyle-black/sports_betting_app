@@ -11,6 +11,7 @@ from urllib.parse import urlparse
 from datetime import datetime
 import schedule
 import time
+from sklearn.calibration import CalibratedClassifierCV
 
 #REDIS_HOST = "127.0.0.1"  # Replace with your Redis server's IP address or hostname
 #REDIS_PORT = 6379  # Replace with your Redis server's port
@@ -118,43 +119,43 @@ def preprocess_redis_data(redis_data):
 
 
 def make_predictions(redis_df):
-    # Load PCA and trained model
-    #with open('pca.pkl', 'rb') as f:
-    #    pca = pickle.load(f)
-    with open('trained_model2.pkl', 'rb') as f:
+    # Load trained model
+    with open('trained_model5.pkl', 'rb') as f:
         model = pickle.load(f)
 
     # Filter columns for X_redis
     X_redis = redis_df.loc[:, redis_df.columns.str.endswith('_home') | redis_df.columns.str.endswith('_away')]
 
-
     X_redis = X_redis[['lowvig_home', 'lowvig_away', 'betonlineag_home', 'betonlineag_away',
-       'unibet_home', 'unibet_away', 'draftkings_home', 'draftkings_away',
-       'pointsbetus_home', 'pointsbetus_away', 'gtbets_home', 'gtbets_away',
-       'mybookieag_home', 'mybookieag_away', 'bovada_home', 'bovada_away',
-       'fanduel_home', 'fanduel_away', 'intertops_home', 'intertops_away',
-       'williamhill_us_home', 'williamhill_us_away', 'betrivers_home',
-       'betrivers_away', 'betmgm_home', 'betmgm_away', 'sugarhouse_home',
-       'sugarhouse_away', 'foxbet_home', 'foxbet_away', 'barstool_home',
-       'barstool_away', 'twinspires_home', 'twinspires_away', 'betus_home',
-       'betus_away', 'wynnbet_home', 'wynnbet_away', 'circasports_home',
-       'circasports_away', 'superbook_home', 'superbook_away',
-       'unibet_us_home', 'unibet_us_away']]
-    # Scale the data
-    #scaler = StandardScaler()
-    
-
-    # Apply PCA
-
-    #print(X_redis.isnull().sum())
-    #X_redis_reduced = pca.transform(X_redis)
+                       'unibet_home', 'unibet_away', 'draftkings_home', 'draftkings_away',
+                       'pointsbetus_home', 'pointsbetus_away', 'gtbets_home', 'gtbets_away',
+                       'mybookieag_home', 'mybookieag_away', 'bovada_home', 'bovada_away',
+                       'fanduel_home', 'fanduel_away', 'intertops_home', 'intertops_away',
+                       'williamhill_us_home', 'williamhill_us_away', 'betrivers_home',
+                       'betrivers_away', 'betmgm_home', 'betmgm_away', 'sugarhouse_home',
+                       'sugarhouse_away', 'foxbet_home', 'foxbet_away', 'barstool_home',
+                       'barstool_away', 'twinspires_home', 'twinspires_away', 'betus_home',
+                       'betus_away', 'wynnbet_home', 'wynnbet_away', 'circasports_home',
+                       'circasports_away', 'superbook_home', 'superbook_away',
+                       'unibet_us_home', 'unibet_us_away']]
 
     # Make predictions
-    #predictions = model.predict_proba(X_redis_reduced)
     predictions = model.predict_proba(X_redis)
 
+    # Calibrate the predicted probabilities
+    #threshold = 0.5  # Adjust the threshold as needed
+    #binary_predictions = (predictions[:, 1] > threshold).astype(int)
 
-     
+    #return binary_predictions
+
+    
+    # Calibrate the binary labels
+    #calibrated_model = CalibratedClassifierCV(model, cv='prefit')
+    #calibrated_model.fit(X_redis, binary_predictions)
+
+    # Get the calibrated probabilities
+    #calibrated_predictions = calibrated_model.predict_proba(X_redis)
+
     return predictions
     
 
@@ -209,6 +210,11 @@ if __name__ in "__main__":
     #scheduler.start()
     print("Pull Time",current_time)
 
+
+    main()
+
+
+'''
     schedule.every(5).minutes.do(main)
 
     while True:
@@ -223,3 +229,4 @@ if __name__ in "__main__":
     #    main()
     #except Exception as e:
     #    print(e) 
+'''
