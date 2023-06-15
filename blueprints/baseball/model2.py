@@ -120,24 +120,24 @@ def preprocess_redis_data(redis_data):
 
 def make_predictions(redis_df):
     # Load trained model
-    with open('trained_model5.pkl', 'rb') as f:
+    with open('trained_model6.pkl', 'rb') as f:
         model = pickle.load(f)
 
     # Filter columns for X_redis
     X_redis = redis_df.loc[:, redis_df.columns.str.endswith('_home') | redis_df.columns.str.endswith('_away')]
 
     X_redis = X_redis[['lowvig_home', 'lowvig_away', 'betonlineag_home', 'betonlineag_away',
-                       'unibet_home', 'unibet_away', 'draftkings_home', 'draftkings_away',
-                       'pointsbetus_home', 'pointsbetus_away', 'gtbets_home', 'gtbets_away',
+                        'draftkings_home', 'draftkings_away',
+                       'pointsbetus_home', 'pointsbetus_away',
                        'mybookieag_home', 'mybookieag_away', 'bovada_home', 'bovada_away',
-                       'fanduel_home', 'fanduel_away', 'intertops_home', 'intertops_away',
+                       'fanduel_home', 'fanduel_away',
                        'williamhill_us_home', 'williamhill_us_away', 'betrivers_home',
                        'betrivers_away', 'betmgm_home', 'betmgm_away', 'sugarhouse_home',
                        'sugarhouse_away', 'foxbet_home', 'foxbet_away', 'barstool_home',
                        'barstool_away', 'twinspires_home', 'twinspires_away', 'betus_home',
                        'betus_away', 'wynnbet_home', 'wynnbet_away', 'circasports_home',
-                       'circasports_away', 'superbook_home', 'superbook_away',
-                       'unibet_us_home', 'unibet_us_away']]
+                       'circasports_away', 'superbook_home', 'superbook_away'
+                       ]]
 
     # Make predictions
     predictions = model.predict_proba(X_redis)
@@ -211,10 +211,10 @@ if __name__ in "__main__":
     print("Pull Time",current_time)
 
 
-   # main()
+    main()
 
 
-
+'''
     schedule.every(5).minutes.do(main)
 
     while True:
@@ -229,3 +229,4 @@ if __name__ in "__main__":
     #    main()
     #except Exception as e:
     #    print(e) 
+'''
