@@ -22,7 +22,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 class TestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('JAWSDB_URL')
     TESTING = True
     
 
