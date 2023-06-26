@@ -160,7 +160,7 @@ def make_predictions(df):
         
         predictions = model.predict_proba(df)
 
-        return df ,predictions
+        return predictions
     
 
 def main():
@@ -181,8 +181,8 @@ def main():
 
     predictions =make_predictions(input_data)
 
-   
-
+    print(predictions)
+    
     team_probabilities = {}
     for idx, row in enumerate(data):
         i_d = row['id']
@@ -197,7 +197,7 @@ def main():
     print(team_probabilities)
 
     redis_client.set("mlb_predictions", json.dumps(team_probabilities))
-
+    
 
 
 
@@ -211,10 +211,10 @@ if __name__ in "__main__":
     print("Pull Time",current_time)
 
 
-#    main()
+   # main()
 
 
-
+    
     schedule.every(5).minutes.do(main)
 
     while True:
