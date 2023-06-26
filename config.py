@@ -27,7 +27,7 @@ class TestingConfig(Config):
     
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('JAWSDB_URL')
     RQ_REDIS_URL = REDIS_URL = os.getenv('REDIS_URL')
 
 
