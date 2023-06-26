@@ -6,6 +6,9 @@ import numpy as np
 import pickle
 import os
 from urllib.parse import urlparse
+from datetime import datetime
+import schedule
+import time
 
 
 
@@ -199,6 +202,26 @@ def main():
 
 
 
-
 if __name__ in "__main__":
-    main()
+    current_time = datetime.now().time()
+    print("StartTime:",current_time)
+    #scheduler = BlockingScheduler()
+    #scheduler.add_job(main, 'interval', minutes=5)
+    #scheduler.start()
+    print("Pull Time",current_time)
+
+
+#    main()
+
+
+
+    schedule.every(5).minutes.do(main)
+
+    while True:
+        try:
+            schedule.run_pending()
+        except Exception as e:
+            print(e)
+        finally:
+            time.sleep(5)
+    
