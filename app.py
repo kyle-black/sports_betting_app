@@ -28,7 +28,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 
 def create_app(config_name):
-
     app = Flask(__name__)
     app.config.from_object(config_dict[config_name])
 
@@ -43,18 +42,20 @@ def create_app(config_name):
         app.logger.setLevel(logging.INFO)
         app.logger.info('Your application startup')
 
-
-
-    
     redis_client = FlaskRedis(app)
 
     db.init_app(app)
+
+    with app.app_context():
+        db.create_all()  # This will create the tables
+
     migrate = Migrate(app, db)  # new
 
     login_manager.init_app(app)
 
     print("Calling fetch_and_store_data...")
     fetch_and_store_data(redis_client)
+
 
     # Register blueprints
     app.register_blueprint(baseball_bp, url_prefix='/baseball')
