@@ -37,6 +37,7 @@ wtforms[email]
 psycopg2 
 
 Flask-Migrate
+PyMySQL==1.0.2
 
 
 
