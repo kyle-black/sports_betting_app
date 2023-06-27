@@ -34,7 +34,7 @@
             <div id="countdown-timer" class="countdown-timer"></div> 
             <div class="table-spacing">
                 {% for game in games %}
-                    {% if not game.has_started and (game.away_prediction is not none or game.home_prediction is not none) and (game.bookmaker_count > 8) %}
+                    {% if not game.has_started and (game.away_prediction is not none or game.home_prediction is not none) %}
                         
                         <div class="content-to-refresh">
                             <div class="game-container">
