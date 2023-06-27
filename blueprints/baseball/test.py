@@ -132,19 +132,21 @@ def create_dataset(redis_data,stats):
     df['lowvig_home'] = redis_data['lowvig_home']
     df['lowvig_away'] = redis_data['lowvig_away']
     df['game_id'] = redis_data['game_id']
-    df_home=df.join(stats, lsuffix='home_team', rsuffix='Tm')
-    df_home =df_home[['R','RA','W-L%','Luck','lowvig_home']]
+    df_home=df.merge(stats,how='left', left_on='home_team', right_on='Tm')
+    #return df_home
+    
+    df_home =df_home[['game_id','R','RA','W-L%','Luck','lowvig_home']]
 
     df_home.rename(columns={'R':'home_R','RA':'home_RA', 'W-L%':'home_W-L%', 'Luck':'home_Luck'}, inplace=True)
     df_home['lowvig_home_vf']=df_home.apply(lambda row: american_to_implied_probability(row['lowvig_home']), axis=1)
     
-    df_away=df.join(stats, lsuffix='away_team', rsuffix='Tm')
-    df_away =df_away[['R','RA','W-L%','Luck', 'lowvig_away']]
+    df_away=df.merge(stats,  left_on='away_team', right_on='Tm')
+    df_away =df_away[['game_id','R','RA','W-L%','Luck', 'lowvig_away']]
     df_away['lowvig_away_vf'] = df_away.apply(lambda row: american_to_implied_probability(row['lowvig_away']), axis=1)
 
     df_away.rename(columns={'R':'away_R','RA':'away_RA', 'W-L%':'away_W-L%', 'Luck':'away_Luck'}, inplace =True)
 
-    df = df_home.join(df_away)
+    df = df_home.merge(df_away, left_on='game_id', right_on='game_id')
 
 
 
@@ -154,7 +156,7 @@ def create_dataset(redis_data,stats):
     
     
     return df
-
+    
 def make_predictions(df):
     with open(f'model/trained_model/trained_model_99.pkl', 'rb') as file:
        
@@ -181,15 +183,16 @@ def main():
     redis_df = preprocess_redis_data(data)
 
     print(redis_df)    
-    '''
+    
     input_data = create_dataset(redis_df,stats)
+    print(input_data)
     
 
-
+    
     predictions =make_predictions(input_data)
 
     print(predictions)
-    
+    '''
     team_probabilities = {}
     for idx, row in enumerate(data):
         i_d = row['id']
@@ -222,6 +225,7 @@ if __name__ in "__main__":
 
 
     '''
+    
     schedule.every(5).minutes.do(main)
 
     while True:
