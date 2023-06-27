@@ -179,6 +179,9 @@ def main():
     
     
     redis_df = preprocess_redis_data(data)
+
+    print(redis_df)    
+    '''
     input_data = create_dataset(redis_df,stats)
     
 
@@ -201,7 +204,7 @@ def main():
     print(team_probabilities)
 
     redis_client.set("mlb_predictions", json.dumps(team_probabilities))
-    
+    '''
 
 
 
@@ -215,10 +218,10 @@ if __name__ in "__main__":
     print("Pull Time",current_time)
 
 
-   # main()
+    main()
 
 
-    
+    '''
     schedule.every(5).minutes.do(main)
 
     while True:
@@ -228,4 +231,4 @@ if __name__ in "__main__":
             print(e)
         finally:
             time.sleep(5)
-    
+    '''
