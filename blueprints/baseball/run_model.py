@@ -158,7 +158,7 @@ def create_dataset(redis_data,stats):
     return df
 
 def make_predictions(df):
-    with open(f'model/trained_model/trained_model_99.pkl', 'rb') as file:
+    with open(f'model/trained_model/trained_model_34.pkl', 'rb') as file:
        
 
         model= pickle.load(file)

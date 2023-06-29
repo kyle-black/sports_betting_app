@@ -231,7 +231,7 @@ def mlb_index():
                                                                                 game['home_expected_value'])
 
     return render_template('baseball/baseball.html', games=mlb_games, bankroll=bankroll, kelly_multiplier=bet_fraction)
-
+    
 
 @baseball_bp.route('/game/<string:game_id>/', methods=['GET', 'POST'])
 def game(game_id):
