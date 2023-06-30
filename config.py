@@ -22,12 +22,12 @@ class DevelopmentConfig(Config):
     DEBUG = True
 
 class TestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('JAWSDB_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     TESTING = True
     
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = os.getenv('JAWSDB_URL')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     RQ_REDIS_URL = REDIS_URL = os.getenv('REDIS_URL')
 
 
