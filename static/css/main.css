@@ -584,10 +584,10 @@ h3.bankroll-output, .kelly-name, .kelly-output {
   padding: 5rem;
 }
 
-@media screen and (max-height: 450px) {
+/*@media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
   .sidenav a {font-size: 18px;}
-}
+}*/
 
 @media (min-width: 768px) {
     .sidenav {
