@@ -1,10 +1,18 @@
-from flask import Blueprint, render_template, abort, current_app, request, session
-from datetime import datetime, timezone
-import json
+#from flask import Blueprint, render_template, abort, current_app, request, session
 from statistics import median
+import json
+from datetime import datetime, timezone
+import redis
+import os
+from urllib.parse import urlparse
 
+#####REDIS CONNECTION
+REDIS_HOST = os.getenv('REDIS_URL')
+parsed_url = urlparse(REDIS_HOST)
+redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port, password=parsed_url.password)
+#REDIS_KEY = "mlb_data" 
+###############################
 
-baseball_bp = Blueprint('baseball', __name__, url_prefix='/baseball')
 
 
 def calculate_best_odds_and_books(games):
@@ -121,28 +129,30 @@ def convert_to_decimal_odds(american_odds):
         return 1 + (-100 / american_odds)
 
 
-@baseball_bp.route('/MLB', methods=['GET', 'POST'])
+#@baseball_bp.route('/MLB', methods=['GET', 'POST'])
 def mlb_index():
-    redis_client = current_app.extensions["redis"]
+    #redis_client = current_app.extensions["redis"]
     games_data = redis_client.get("mlb_data")
     predictions_data = redis_client.get('mlb_predictions')
+
+
     
     mlb_games = []
     date_format = "%Y-%m-%dT%H:%M:%SZ"
 
     default_value = 100
-    if request.method == 'POST':
-        bankroll = float(request.form['bankroll'])
-        session['bankroll'] = bankroll
-    else:
-        bankroll = session.get('bankroll', default_value)
+   # if request.method == 'POST':
+   #     bankroll = float(request.form['bankroll'])
+   #     session['bankroll'] = bankroll
+   # else:
+   #     bankroll = session.get('bankroll', default_value)
 
-    bet_fraction = 1
-    if request.method == 'POST':
-        bet_fraction = float(request.form['kelly_multiplier'])
-        session['kelly_multiplier'] = bet_fraction
-    else:
-        bet_fraction = session.get('kelly_multiplier', bet_fraction)
+    #bet_fraction = 1
+    #if request.method == 'POST':
+    #    bet_fraction = float(request.form['kelly_multiplier'])
+    #    session['kelly_multiplier'] = bet_fraction
+    #else:
+    #    bet_fraction = session.get('kelly_multiplier', bet_fraction)
 
     if predictions_data:
         predictions = json.loads(predictions_data)
@@ -210,10 +220,8 @@ def mlb_index():
         mlb_games = []
 
     bet_amount = 150
-
+    '''
     for game in mlb_games:
-        
-        
         if game['home_prediction_american'] is not None and game['away_prediction_american'] is not None:
             game['kelly_home_bet'], game['kelly_gross_home'] = kelly_criterion(game['best_home_odds'],
                                                                                game['home_prediction'] / 100,
@@ -231,108 +239,12 @@ def mlb_index():
         if 'home_expected_value' in game:
             game['home_expected_value_bet'] = calculate_expected_value_from_bet(game['kelly_gross_home'],
                                                                                 game['home_expected_value'])
-        
-
-    games_data = redis_client.get("mlb_data")
-    predictions_data = redis_client.get('mlb_predictions')
-
-    #print(f'Games data: {games_data}')
-    print(f'Predictions data: {predictions_data}')
-    return render_template('baseball/baseball.html', games=mlb_games, bankroll=bankroll, kelly_multiplier=bet_fraction)
-    return render_template('baseball/test.html', games=predictions)
-
-@baseball_bp.route('/game/<string:game_id>/', methods=['GET', 'POST'])
-def game(game_id):
-    redis_client = current_app.extensions["redis"]
-    games_data = redis_client.get("mlb_data")
-    predictions_data = redis_client.get('mlb_predictions')
-
-    default_value = 100
-    if request.method == 'POST':
-        bankroll = float(request.form['bankroll'])
-        session['bankroll'] = bankroll
-    else:
-        bankroll = session.get('bankroll', default_value)
-
-    bet_fraction = 1
-    if request.method == 'POST':
-        bet_fraction = float(request.form['kelly_multiplier'])
-        session['kelly_multiplier'] = bet_fraction
-    else:
-        bet_fraction = session.get('kelly_multiplier', bet_fraction)
-
-    if games_data:
-        games = json.loads(games_data)
-        game = next((g for g in games if g['id'] == game_id), None)
-
-        if game is None:
-            abort(404)
-
-        # Get the predictions
-        if predictions_data:
-            predictions = json.loads(predictions_data)
-            game_prediction = predictions.get(game_id)
-
-            if game_prediction:
-                game['away_prediction'] = round((game_prediction['probs'][0] * 100), 1)
-                game['home_prediction'] = round((game_prediction['probs'][1] * 100), 1)
-                game['away_prediction_american'] = probability_to_american_odds(game_prediction['probs'][0])
-                game['home_prediction_american'] = probability_to_american_odds(game_prediction['probs'][1])
-
-        # Prepare the bookmakers data
-        bookmakers = []
-        for bookmaker in game['bookmakers']:
-            h2h_market = next((market for market in bookmaker['markets'] if market['key'] == 'h2h'), None)
-            if h2h_market:
-                home_odds = None
-                away_odds = None
-                for outcome in h2h_market['outcomes']:
-                    if outcome['name'] == game['home_team']:
-                        home_odds = outcome['price']
-                    elif outcome['name'] == game['away_team']:
-                        away_odds = outcome['price']
-
-                # Calculate expected value
-                home_expected_value = None
-                away_expected_value = None
-
-                if game_prediction:
-                    home_expected_value = calculate_expected_value(game['home_prediction_american'], home_odds)
-                    away_expected_value = calculate_expected_value(game['away_prediction_american'], away_odds)
-
-                home_probability = american_odds_to_probability(home_odds)
-                away_probability = american_odds_to_probability(away_odds)
-
-                kelly_home_bet, kelly_home_gross = kelly_criterion(home_odds, game['home_prediction'] / 100, bankroll,
-                                                                   bet_fraction)
-                kelly_away_bet, kelly_away_gross = kelly_criterion(away_odds, game['away_prediction'] / 100, bankroll,
-                                                                   bet_fraction)
-
-                bookmaker_data = {
-                    'title': bookmaker['title'],
-                    'home_odds': home_odds,
-                    'away_odds': away_odds,
-                    'home_expected_value': home_expected_value,
-                    'away_expected_value': away_expected_value,
-                    'home_probability': round(home_probability * 100, 1),
-                    'away_probability': round(away_probability * 100, 1),
-                    'kelly_home_bet': kelly_home_bet,
-                    'kelly_away_bet': kelly_away_bet,
-                    'kelly_home_gross': kelly_home_gross,
-                    'kelly_away_gross': kelly_away_gross
-                }
-                bookmakers.append(bookmaker_data)
-
-        game['bookmakers'] = bookmakers
-
-        return render_template('baseball/baseball_game.html', game=game, bankroll=bankroll)
-
-    else:
-        abort(404)
+    '''
+    #return render_template('baseball/baseball.html', games=mlb_games, bankroll=bankroll, kelly_multiplier=bet_fraction)
+    #return render_template('baseball/test.html', games=predictions)
+   # print(predictions)
+    return predictions
 
 
-@baseball_bp.route('/test')
-def test_data():
-    preds = model2.predictions
-    return preds
-
+if __name__ in "__main__":
+    print(mlb_index())

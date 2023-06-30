@@ -135,13 +135,13 @@ def create_dataset(redis_data,stats):
     df_home=df.merge(stats,how='left', left_on='home_team', right_on='Tm')
     #return df_home
     
-    df_home =df_home[['game_id','R','RA','W-L%','Luck','lowvig_home']]
+    df_home =df_home[['game_id','home_team','R','RA','W-L%','Luck','lowvig_home']]
 
     df_home.rename(columns={'R':'home_R','RA':'home_RA', 'W-L%':'home_W-L%', 'Luck':'home_Luck'}, inplace=True)
     df_home['lowvig_home_vf']=df_home.apply(lambda row: american_to_implied_probability(row['lowvig_home']), axis=1)
     
     df_away=df.merge(stats,  left_on='away_team', right_on='Tm')
-    df_away =df_away[['game_id','R','RA','W-L%','Luck', 'lowvig_away']]
+    df_away =df_away[['game_id','away_team','R','RA','W-L%','Luck', 'lowvig_away']]
     df_away['lowvig_away_vf'] = df_away.apply(lambda row: american_to_implied_probability(row['lowvig_away']), axis=1)
 
     df_away.rename(columns={'R':'away_R','RA':'away_RA', 'W-L%':'away_W-L%', 'Luck':'away_Luck'}, inplace =True)
@@ -150,7 +150,7 @@ def create_dataset(redis_data,stats):
 
 
 
-    df =df[['home_R','away_R','home_RA','away_RA', 'home_W-L%', 'away_W-L%','home_Luck','away_Luck','lowvig_home_vf','lowvig_away_vf','lowvig_home','lowvig_away']]
+    df =df[['game_id','home_team','away_team','home_R','away_R','home_RA','away_RA', 'home_W-L%', 'away_W-L%','home_Luck','away_Luck','lowvig_home_vf','lowvig_away_vf','lowvig_home','lowvig_away']]
     
 
     
@@ -159,50 +159,60 @@ def create_dataset(redis_data,stats):
 
 def make_predictions(df):
     with open(f'model/trained_model/trained_model_34.pkl', 'rb') as file:
-       
+        model = pickle.load(file)
 
-        model= pickle.load(file)
-
+        # Remove game_id before making predictions
+        game_ids = df['game_id']
+        input_features = df.drop(columns=['game_id','away_team','home_team'])
         
-        predictions = model.predict_proba(df)
-
-        return predictions
+        # Get predictions
+        predictions = model.predict_proba(input_features)
+        
+        # Return a DataFrame including game_id and predictions
+        prediction_df = pd.DataFrame(predictions, columns=['away_prob', 'home_prob'])
+        prediction_df['game_id'] = game_ids.values
+        return prediction_df
     
 
 def main():
-    #print(fetch_and_store_data(redis_client))
+    # fetch and preprocess data
     redis_data = redis_client.get(REDIS_KEY)
-    #print(redis_data)
-    
-    redis_data = redis_client.get(REDIS_KEY)
-    print(redis_data)
     data = json.loads(redis_data)
-
-    
-    
     redis_df = preprocess_redis_data(data)
-    input_data = create_dataset(redis_df,stats)
-    
 
+    # create input data for model and make predictions
+    input_data = create_dataset(redis_df, stats)
+    predictions = make_predictions(input_data)
 
-    predictions =make_predictions(input_data)
+    # merge input_data and predictions on 'game_id'
+    merged_df = pd.merge(input_data, predictions, on='game_id')
 
-    print(predictions)
-    
+    # initialize team_probabilities dict
     team_probabilities = {}
-    for idx, row in enumerate(data):
-        i_d = row['id']
+
+    for idx, row in merged_df.iterrows():
+        game_id = row['game_id']
         away_team = row['away_team']
         home_team = row['home_team']
-        away_prob = predictions[idx][0]
-        home_prob = predictions[idx][1]
-        team_probabilities[i_d] = {'away_team': away_team,
-                                'home_team': home_team,
-                                'probs': [away_prob.item(), home_prob.item()]}
+        away_prob = row['away_prob']
+        home_prob = row['home_prob']
+
+        team_probabilities[game_id] = {'away_team': away_team,
+                                        'home_team': home_team,
+                                        'probs': [away_prob, home_prob]}
 
     print(team_probabilities)
 
+    # store the team_probabilities to redis
     redis_client.set("mlb_predictions", json.dumps(team_probabilities))
+
+
+
+
+
+
+
+
     
 
 
@@ -217,10 +227,10 @@ if __name__ in "__main__":
     print("Pull Time",current_time)
 
 
-   # main()
+    main()
 
 
-    
+    '''
     schedule.every(5).minutes.do(main)
 
     while True:
@@ -230,4 +240,4 @@ if __name__ in "__main__":
             print(e)
         finally:
             time.sleep(5)
-    
+    '''
