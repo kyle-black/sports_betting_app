@@ -227,10 +227,10 @@ if __name__ in "__main__":
     print("Pull Time",current_time)
 
 
-    main()
+#    main()
 
 
-    '''
+    
     schedule.every(5).minutes.do(main)
 
     while True:
@@ -240,4 +240,4 @@ if __name__ in "__main__":
             print(e)
         finally:
             time.sleep(5)
-    '''
+    
