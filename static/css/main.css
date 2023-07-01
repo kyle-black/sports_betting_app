@@ -54,11 +54,16 @@ main {
 }
 
 /* Footer */
+
+@media only screen and (max-width: 769px) {
+
 footer {
     text-align: center;
     padding: 10px;
     background-color: #389e90;
     color: #fff;
+    display: none;
+}
 }
 /* Other CSS rules */
 
@@ -460,11 +465,18 @@ input:checked + .slider:before {
     margin-right: 20px; /* Adjust the value as needed */
 }
 
-.main-container {
+@media only screen and (max-width: 769px){
+    .table-limited-width{
+        width: 100%;
+    }
+    .main-container {
     display: flex;
     width:100%;
     padding-bottom: 10%;
+    padding:0;
+    margin:0;
     
+}
 }
 .auto-refresh-container {
     margin-left: 230px;
@@ -530,11 +542,13 @@ h3.bankroll-output, .kelly-name, .kelly-output {
     color: white;
 }
 
+@media only screen and (min-width: 769px){
 .navbar-nav-right {
     position: absolute;
     right: 15rem;
     top: 1.5rem;
   }
+}
 
 .dropdown-menu {
     overflow: hidden;
@@ -594,6 +608,8 @@ h3.bankroll-output, .kelly-name, .kelly-output {
       display: block;
     }
   }
+
+
 
 #logos-title{
 
