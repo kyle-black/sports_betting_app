@@ -48,7 +48,7 @@
                                             <th class="matchup seafoam-bg">A.I.%</th>
                                             <th class="matchup">EV%</th>
                                           <!--  <th class="matchup">EV$</th> -->
-                                            <th class="matchup">Kelly Calc</th>
+                                            
                                             <th class="matchup">Bet Size</th>
                                         </tr>
                                     </thead>
@@ -77,7 +77,7 @@
                                                 <span class="ev-color">{{ game.away_expected_value }}%</span>
                                             </td>
                                         <!--    <td class="table-centered-data min-width-odds">${{ game.away_expected_value_bet }}</td> -->
-                                            <td class="table-centered-data min-width-odds">{{ game.kelly_away_bet | round(2) }}</td>
+                                            
                                             <td class="table-centered-data min-width-odds">${{ game.kelly_gross_away | round(2) }}</td>
                                         </tr>
                                         <tr class="table-away-team">
@@ -101,7 +101,7 @@
                                                 <span class="ev-color">{{ game.home_expected_value }}%</span>
                                             </td>
                                        <!--     <td class="table-centered-data min-width-odds">${{ game.home_expected_value_bet }}</td> -->
-                                            <td class="table-centered-data min-width-odds">{{ game.kelly_home_bet | round(2) }}</td>
+                                            
                                             <td class="table-centered-data min-width-odds">$ {{ game.kelly_gross_home | round(2) }}</td>
                                         </tr>
                                     </tbody>
