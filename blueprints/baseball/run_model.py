@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from datetime import datetime
 import schedule
 import time
-
+import data_fetcher
 
 
 #####REDIS CONNECTION
@@ -176,7 +176,9 @@ def make_predictions(df):
 
 def main():
     # fetch and preprocess data
+    #data_fetcher.fetch_and_store_data
     redis_data = redis_client.get(REDIS_KEY)
+    data_fetcher.fetch_and_store_data(redis_client)
     data = json.loads(redis_data)
     redis_df = preprocess_redis_data(data)
 
@@ -202,7 +204,9 @@ def main():
                                         'probs': [away_prob, home_prob]}
 
     print(team_probabilities)
-
+    try:
+        redis_client.delete('mlb_predictions')
+    except: ('nothing to delete')
     # store the team_probabilities to redis
     redis_client.set("mlb_predictions", json.dumps(team_probabilities))
 
