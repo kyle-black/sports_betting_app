@@ -30,14 +30,16 @@ Flask-SQLAlchemy==2.5.1
 
 
 
-xgboost
+
 
 wtforms[email]
 
-psycopg2 
+
 
 Flask-Migrate
 PyMySQL==1.0.2
+
+beautifulsoup4
 
 
 
