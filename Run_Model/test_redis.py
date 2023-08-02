@@ -22,4 +22,4 @@ def tester_():
 
 
 if __name__ in "__main__":
-    tester_()
+    print(tester_())
