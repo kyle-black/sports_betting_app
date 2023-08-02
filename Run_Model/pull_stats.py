@@ -166,7 +166,7 @@ def opp_stats(redis_client):
 if __name__ in "__main__":
     url =os.getenv('REDIS_URL')
     parsed_url =urlparse(url)
-    redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port, password=parsed_url.password)
+    redis_client = redis.Redis(host=parsed_url.hostname, port=parsed_url.port, password=parsed_url.password , socket_timeout=30.0)
     win_stats(redis_client)
     run_stats(redis_client)
     opp_stats(redis_client)
