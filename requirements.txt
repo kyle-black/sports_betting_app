@@ -40,6 +40,6 @@ Flask-Migrate
 PyMySQL==1.0.2
 
 beautifulsoup4
-
+redis
 
 
