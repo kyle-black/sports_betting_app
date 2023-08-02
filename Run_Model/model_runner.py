@@ -3,7 +3,7 @@ import numpy as np
 import sqlite3
 import pull_stats ##### Pulls team stats from webscrapping and into Redis
 import odds_fetcher #### Pulls Odds from API and into Redis
-from Run_Model.model import model_output
+from model import model_output
 
 import json
 
